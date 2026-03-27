@@ -13,6 +13,12 @@ export const metadata: Metadata = {
 export default function Page() {
   return (
     <>
+      <blockquote>
+        <strong>Note</strong>: As you can see this website is a bit outdated and
+        a bit broken. I'm currently quite busy, but once I do have time I will
+        rewrite this website to make it better (hopefully) and at least fix the
+        issues.
+      </blockquote>
       <h1>Home</h1>
       <p>
         Hi, I&#39;m SunnyMonster, <Birthday /> creationer and (almost)

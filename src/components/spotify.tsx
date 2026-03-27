@@ -92,6 +92,8 @@ function ProgressBar({
 const fetcher = (url: string) => fetch(url).then((res) => res.json());
 
 function SpotifyInner() {
+  return <Skeleton />;
+
   const { data, error } = useSWR("/api/now-playing", fetcher, {
     refreshInterval: (data) => {
       if (data && data.isPlayingNow) {
