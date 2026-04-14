@@ -1,23 +1,41 @@
-<!doctype html>
-<html lang="en">
+---
+const { title } = Astro.props;
+import Nav from "../components/Nav.astro";
+---
+
+<html lang="en" data-theme="dark">
 	<head>
 		<meta charset="UTF-8" />
 		<meta name="viewport" content="width=device-width" />
 		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
 		<link rel="icon" href="/favicon.ico" />
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Delius&family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&family=Sour+Gummy:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
 		<meta name="generator" content={Astro.generator} />
-		<title>Astro Basics</title>
+        <title>{title}</title>
 	</head>
 	<body>
+        <Nav />
 		<slot />
 	</body>
 </html>
 
-<style>
+<style is:global lang="scss">
+    @use "../styles/themes";
+    @use "../styles/fonts" as f;
+
 	html,
 	body {
 		margin: 0;
 		width: 100%;
 		height: 100%;
 	}
+
+    body {
+        background-color: var(--c-mantle);
+        color: var(--c-text);
+
+        @include f.body;
+    }
 </style>

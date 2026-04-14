@@ -1,0 +1,19 @@
+@mixin body {
+  font-family: "Delius", sans-serif;
+  font-weight: 400;
+  font-style: normal;
+}
+
+@mixin code {
+  font-family: "JetBrains Mono", monospace;
+  font-optical-sizing: auto;
+  font-style: normal;
+}
+
+@mixin header {
+  font-family: "Sour Gummy", sans-serif;
+  font-optical-sizing: auto;
+  font-style: normal;
+  font-variation-settings:
+    "wdth" 100;
+}

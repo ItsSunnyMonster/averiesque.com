@@ -1,14 +1,19 @@
 {
-  "name": "sunnymonster-dev",
-  "type": "module",
-  "version": "0.0.1",
-  "scripts": {
-    "dev": "astro dev",
-    "build": "astro build",
-    "preview": "astro preview",
-    "astro": "astro"
-  },
-  "dependencies": {
-    "astro": "^5.16.15"
-  }
+    "name": "sunnymonster-dev",
+    "type": "module",
+    "version": "0.0.1",
+    "scripts": {
+        "dev": "astro dev",
+        "build": "astro build",
+        "preview": "astro preview",
+        "astro": "astro"
+    },
+    "dependencies": {
+        "@catppuccin/palette": "^1.8.0",
+        "astro": "^5.16.15",
+        "sass": "^1.97.3"
+    },
+    "devDependencies": {
+        "prettier": "^3.8.1"
+    }
 }

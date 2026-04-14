@@ -1,0 +1,15 @@
+@use "sass:meta";
+@use "@catppuccin/palette/scss/mocha" as mocha;
+@use "@catppuccin/palette/scss/latte" as latte;
+
+html[data-theme="dark"] {
+  @each $name, $value in meta.module-variables("mocha") {
+    --c-#{$name}: #{$value};
+  }
+}
+
+html[data-theme="light"] {
+  @each $name, $value in meta.module-variables("latte") {
+    --c-#{$name}: #{$value};
+  }
+}
