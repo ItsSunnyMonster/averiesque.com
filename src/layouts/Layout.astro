@@ -1,5 +1,6 @@
 ---
 const { title } = Astro.props;
+
 import Nav from "../components/Nav.astro";
 ---
 
@@ -23,7 +24,7 @@ import Nav from "../components/Nav.astro";
 
 <style is:global lang="scss">
     @use "../styles/themes";
-    @use "../styles/fonts" as f;
+    @use "../styles/fonts";
 
 	html,
 	body {
@@ -36,6 +37,10 @@ import Nav from "../components/Nav.astro";
         background-color: var(--c-mantle);
         color: var(--c-text);
 
-        @include f.body;
+        @include fonts.body;
+    }
+
+    h1 {
+        @include fonts.header;
     }
 </style>
