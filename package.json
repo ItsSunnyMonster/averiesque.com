@@ -10,7 +10,7 @@
     },
     "dependencies": {
         "@catppuccin/palette": "^1.8.0",
-        "astro": "^5.16.15",
+        "astro": "^6.3.3",
         "sass": "^1.97.3"
     },
     "devDependencies": {

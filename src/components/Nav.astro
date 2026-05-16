@@ -1,6 +1,12 @@
+---
+import Logo from './Logo.astro';
+---
+
 <header>
     <div class="content-container">
         <div class="left-container">
+            <Logo size={60} />
+            <a href="#" class="green">sunny_monster</a>
         </div>
         <div class="right-container">
         </div>
@@ -8,19 +14,54 @@
 </header>
 
 <style lang="scss">
+    @use "../styles/fonts";
+
+    a {
+        @include fonts.code;
+    }
+
     header {
-        /* */
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        width: 100svw;
 
-        > .content-container {
-            /* */
+        padding: 1.5rem 2rem;
 
-            > .left-container {
-                /* */
-            }
+        display: flex;
+        justify-content: center;
+        align-items: center;
 
-            > .right-container {
-                /* */
-            }
+        transition: all 200ms ease-in-out;
+
+        border-bottom: 2px solid #ffffff00;
+        background-color: var(--c-mantle);
+
+        z-index: 10;
+    }
+
+    .content-container {
+        max-width: 64rem;
+        width: 100%;
+
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .left-container {
+        display: flex;
+        align-items: center;
+        gap: .75rem;
+
+        > a {
+            font-size: 1.5rem;
+            font-weight: 480;
         }
+    }
+
+    .right-container {
+        /* */
     }
 </style>
