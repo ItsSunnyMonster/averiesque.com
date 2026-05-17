@@ -3,6 +3,10 @@ import { Image } from "astro:assets";
 import logoDark from "../assets/logo_dark_transparent.png";
 import logoLight from "../assets/logo_light_transparent.png";
 
+interface Props {
+  size: number;
+}
+
 const { size } = Astro.props;
 ---
 
