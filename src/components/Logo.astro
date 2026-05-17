@@ -1,49 +1,65 @@
 ---
 import { Image } from "astro:assets";
-import logoDark from '../assets/logo_dark_transparent.png'
-import logoLight from '../assets/logo_light_transparent.png'
+import logoDark from "../assets/logo_dark_transparent.png";
+import logoLight from "../assets/logo_light_transparent.png";
 
 const { size } = Astro.props;
 ---
 
 <div>
-    <Image src={logoLight} id="logo_light" alt="Glowing SM logo with a cartoonish font" width={size} height={size} densities={[1, 2, 3]} aria-hidden />
-    <Image src={logoDark} id="logo_dark" alt="Glowing SM logo with a cartoonish font" width={size} height={size} densities={[1, 2, 3]} />
+  <Image
+    src={logoLight}
+    id="logo_light"
+    alt="Glowing SM logo with a cartoonish font"
+    width={size}
+    height={size}
+    densities={[1, 2, 3]}
+    aria-hidden
+  />
+  <Image
+    src={logoDark}
+    id="logo_dark"
+    alt="Glowing SM logo with a cartoonish font"
+    width={size}
+    height={size}
+    densities={[1, 2, 3]}
+  />
 </div>
 
 <style lang="scss">
-    div {
-        position: relative;
-        width: 60px;
-        height: 60px;
+  div {
+    position: relative;
+    width: 60px;
+    height: 60px;
 
-        > img {
-            position: absolute;
-            inset: 0;
-        }
+    > img {
+      position: absolute;
+      inset: 0;
+    }
+  }
+
+  #logo_light,
+  #logo_dark {
+    transition: opacity 200ms ease-in-out;
+  }
+
+  :root[data-theme="dark"] {
+    #logo_light {
+      opacity: 0;
     }
 
-    #logo_light, #logo_dark {
-        transition: opacity 200ms ease-in-out;
+    #logo_dark {
+      opacity: 1;
+    }
+  }
+
+  :root[data-theme="light"] {
+    #logo_light {
+      opacity: 1;
     }
 
-    :root[data-theme="dark"] {
-        #logo_light {
-            opacity: 0;
-        }
-
-        #logo_dark {
-            opacity: 1;
-        }
+    #logo_dark {
+      opacity: 0;
     }
-
-    :root[data-theme="light"] {
-        #logo_light {
-            opacity: 1;
-        }
-
-        #logo_dark {
-            opacity: 0;
-        }
-    }
+  }
 </style>
