@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&family=Playpen+Sans:wght@100..800&family=Sour+Gummy:ital,wght@0,100..900;1,100..900&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+
+        width: 100svw;
+        height: 100svh;
+
+        background: radial-gradient(circle, #181825 0%, #11111b 100%);
+        color: #cdd6f4;
+
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-direction: column;
+        gap: 10svh;
+      }
+
+      @keyframes gradientScroll {
+        0% {
+          background-position-x: 0%;
+        }
+
+        100% {
+          background-position-x: 300%;
+        }
+      }
+
+      h1 {
+        position: relative;
+      }
+
+      h1,
+      h1::after {
+        font-size: 10svw;
+        margin: 0;
+
+        font-family: "Sour Gummy", sans-serif;
+
+        color: transparent;
+        background-clip: text;
+        background-image: linear-gradient(
+          to right,
+          #f38ba8,
+          #eba0ac,
+          #fab387,
+          #f9e2af,
+          #a6e3a1,
+          #89dceb,
+          #74c7ec,
+          #cba6f7,
+          #f38ba8
+        );
+        background-size: 150%;
+        animation: gradientScroll 5s linear infinite;
+      }
+
+      h1::after {
+        position: absolute;
+        inset: 0;
+        content: "Coming Soon";
+        transform: scale(1.15, 1.5) translateZ(0);
+        opacity: 0.8;
+        filter: blur(60px);
+        will-change: filter;
+        user-select: none;
+        pointer-events: none;
+      }
+
+      p {
+        margin: 0;
+
+        font-size: 1.2rem;
+        text-align: center;
+
+        font-family: "Playpen Sans", sans-serif;
+      }
+    </style>
+    <title>Coming Soon</title>
+  </head>
+  <body>
+    <h1>Coming Soon</h1>
+    <p>
+      My old website has become a complete mess to maintain.
+      <br />
+      Thus, I have started a rewrite of my website and it will be completed
+      soonish.
+      <br />
+      <br />
+      <strong>Stay tuned! :3</strong>
+    </p>
+  </body>
+</html>
