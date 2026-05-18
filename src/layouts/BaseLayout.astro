@@ -1,15 +1,11 @@
 ---
-import type { MarkdownLayoutProps } from "astro";
 import Nav from "../components/Nav.astro";
 
-interface RawProps {
+export interface Props {
   title: string;
 }
 
-type Props = RawProps | MarkdownLayoutProps<RawProps>;
-
-const { title } =
-  "frontmatter" in Astro.props ? Astro.props.frontmatter : Astro.props;
+const { title } = Astro.props;
 ---
 
 <html lang="en" data-theme="dark">
@@ -89,13 +85,15 @@ const { title } =
     line-height: 1;
   }
 
-  a.green {
+  a.underlined,
+  .prose a {
     color: var(--c-pink);
     text-shadow: 0px 0px 15px var(--c-pink);
     text-decoration: none;
   }
 
-  a.green:hover {
+  a.underlined:hover,
+  .prose a:hover {
     color: var(--c-mantle);
     text-shadow: none;
     background-color: var(--c-green);

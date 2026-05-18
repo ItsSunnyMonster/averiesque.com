@@ -1,0 +1,14 @@
+---
+import type { MarkdownLayoutProps } from "astro";
+
+import type { Props as BaseProps } from "./BaseLayout.astro";
+import BaseLayout from "./BaseLayout.astro";
+
+type Props = MarkdownLayoutProps<BaseProps>;
+---
+
+<BaseLayout {...Astro.props.frontmatter}>
+  <div class="prose">
+    <slot />
+  </div>
+</BaseLayout>
