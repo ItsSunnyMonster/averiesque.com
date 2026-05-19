@@ -1,6 +1,8 @@
 ---
 import Nav from "../components/Nav.astro";
 
+import "../styles/global.scss";
+
 export interface Props {
   title: string;
 }
@@ -33,7 +35,7 @@ const { title } = Astro.props;
 
 <style lang="scss">
   @use "../styles/themes";
-  @use "../styles/fonts";
+  @use "../styles/mixins/fonts";
 
   html,
   body {
@@ -50,52 +52,20 @@ const { title } = Astro.props;
 
     @include fonts.body;
 
-    font-size: 1.25rem;
-    line-height: 1.75rem;
+    font-size: clamp(1em, 0.875rem + 0.5vw, 1.25rem);
 
     display: flex;
     flex-direction: column;
     align-items: center;
-    transition:
-      background-color 200ms ease-in-out,
-      color 200ms ease-in-out;
+    // transition:
+    //   background-color 200ms ease-in-out,
+    //   color 200ms ease-in-out;
   }
 
   main {
-    max-width: 64rem;
+    max-width: 70ch;
     width: 100%;
     padding: 1.5rem 2rem;
     margin-top: 9rem;
-  }
-</style>
-
-<style is:global lang="scss">
-  @use "../styles/fonts";
-
-  * {
-    box-sizing: border-box;
-  }
-
-  h1 {
-    @include fonts.header;
-
-    margin-top: 0;
-    margin-bottom: 0.857143em;
-    font-size: 2.8em;
-    line-height: 1;
-  }
-
-  a.underlined,
-  .prose a {
-    color: var(--c-pink);
-    text-shadow: 0px 0px 15px var(--c-pink);
-    text-decoration: none;
-  }
-
-  a.underlined:hover,
-  .prose a:hover {
-    color: var(--c-mantle);
-    text-shadow: none;
-    background-color: var(--c-green);
   }
 </style>

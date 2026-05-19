@@ -1,0 +1,14 @@
+@use "sass:list";
+
+@mixin prose($els...) {
+  $selector: ();
+
+  @each $el in $els {
+    $selector: list.append($selector, ".prose #{$el}", "comma");
+    $selector: list.append($selector, "#{$el}.prose", "comma");
+  }
+
+  @at-root #{$selector} {
+    @content;
+  }
+}

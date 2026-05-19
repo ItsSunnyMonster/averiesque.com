@@ -8,14 +8,14 @@ interface Props {}
   <div class="content-container">
     <div class="left-container">
       <Logo size={60} />
-      <a href="/" class="green">sunny_monster</a>
+      <a href="/" class="prose">sunny_monster</a>
     </div>
     <div class="right-container"></div>
   </div>
 </header>
 
 <style lang="scss">
-  @use "../styles/fonts";
+  @use "../styles/mixins/fonts";
 
   a {
     @include fonts.code;
@@ -34,7 +34,7 @@ interface Props {}
     justify-content: center;
     align-items: center;
 
-    transition: all 200ms ease-in-out;
+    // transition: all 200ms ease-in-out;
 
     border-bottom: 2px solid #ffffff00;
     background-color: var(--c-mantle);
