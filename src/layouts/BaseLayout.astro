@@ -19,7 +19,7 @@ const { title } = Astro.props;
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&family=Playpen+Sans:wght@100..800&family=Sour+Gummy:ital,wght@0,100..900;1,100..900&display=swap"
+      href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&family=Nunito:ital,wght@0,200..1000;1,200..1000&family=Sour+Gummy:ital,wght@0,100..900;1,100..900&display=swap"
       rel="stylesheet"
     />
     <meta name="generator" content={Astro.generator} />
@@ -60,12 +60,50 @@ const { title } = Astro.props;
     // transition:
     //   background-color 200ms ease-in-out,
     //   color 200ms ease-in-out;
+
+    ::selection {
+      background-color: var(--unenergized-accent);
+      color: var(--c-crust);
+    }
+  }
+
+  // @supports (scrollbar-width: auto) {
+  //   body {
+  //     scrollbar-color: var(--c-overlay0) transparent;
+  //     // scrollbar-width: thin;
+  //   }
+  // }
+
+  // @supports selector(::-webkit-scrollbar) {
+  //   ::-webkit-scrollbar {
+  //     width: 6px;
+  //     marign-right: 10px;
+  //   }
+
+  //   ::-webkit-scrollbar-track {
+  //     background: transparent;
+  //   }
+
+  //   ::-webkit-scrollbar-thumb {
+  //     background: var(--c-overlay0);
+  //     border-radius: 999px;
+  //     transition: background 0.2s;
+  //   }
+
+  //   ::-webkit-scrollbar-thumb:hover {
+  //     background: var(--unenergized-accent);
+  //   }
+  // }
+
+  html {
+    scrollbar-gutter: stable;
   }
 
   main {
-    max-width: 70ch;
+    --padding-x: 2rem;
+    max-width: calc(75ch + var(--padding-x) * 2);
     width: 100%;
-    padding: 1.5rem 2rem;
+    padding: 1.5rem var(--padding-x);
     margin-top: 9rem;
   }
 </style>

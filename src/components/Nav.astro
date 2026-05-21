@@ -1,5 +1,5 @@
 ---
-import Logo from "./Logo.astro";
+// import Logo from "./Logo.astro";
 
 interface Props {}
 ---
@@ -7,8 +7,8 @@ interface Props {}
 <header>
   <div class="content-container">
     <div class="left-container">
-      <Logo size={60} />
-      <a href="/" class="prose">sunny_monster</a>
+      <!-- <Logo size={60} /> -->
+      <a href="/" class="prose">Averiesque</a>
     </div>
     <div class="right-container"></div>
   </div>
@@ -18,10 +18,12 @@ interface Props {}
   @use "../styles/mixins/fonts";
 
   a {
-    @include fonts.code;
+    @include fonts.header;
   }
 
   header {
+    @include fonts.body;
+
     position: fixed;
     top: 0;
     left: 0;
@@ -43,7 +45,7 @@ interface Props {}
   }
 
   .content-container {
-    max-width: 64rem;
+    max-width: 75ch;
     width: 100%;
 
     display: flex;
@@ -55,6 +57,8 @@ interface Props {}
     display: flex;
     align-items: center;
     gap: 0.75rem;
+
+    min-height: 60px;
 
     > a {
       font-size: 1.5rem;

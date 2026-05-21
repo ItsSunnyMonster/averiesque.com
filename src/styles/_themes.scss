@@ -13,3 +13,9 @@ html[data-theme="light"] {
     --c-#{$name}: #{$value};
   }
 }
+
+* {
+  --unenergized-accent: var(--c-pink);
+  --energized-accent: var(--c-green);
+  --energized-alt: var(--c-teal);
+}

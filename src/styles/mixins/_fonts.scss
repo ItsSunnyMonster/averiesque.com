@@ -1,6 +1,7 @@
 @mixin body {
-  font-family: "Playpen Sans", sans-serif;
+  font-family: "Nunito", sans-serif;
   font-weight: 400;
+  font-optical-sizing: auto;
 }
 
 @mixin code {
