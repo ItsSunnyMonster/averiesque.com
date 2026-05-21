@@ -1,6 +1,7 @@
 ---
 layout: ../layouts/MarkdownBaseLayout.astro
 title: Other Page
+hideTitle: true
 ---
 
 # The Luckiest Bug

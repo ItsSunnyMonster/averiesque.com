@@ -79,6 +79,12 @@
   font-size: 0.9em;
 }
 
+// Images
+@include prose(img) {
+  max-width: 100%;
+  height: auto;
+}
+
 // Links (opt in from outside of markdown, on by default in markdown)
 // FIXME: Placeholder
 @include prose(a) {

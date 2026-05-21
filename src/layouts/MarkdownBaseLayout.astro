@@ -4,11 +4,14 @@ import type { MarkdownLayoutProps } from "astro";
 import type { Props as BaseProps } from "./BaseLayout.astro";
 import BaseLayout from "./BaseLayout.astro";
 
-type Props = MarkdownLayoutProps<BaseProps>;
+type Props = MarkdownLayoutProps<BaseProps & { hideTitle: boolean }>;
+
+const { title, hideTitle } = Astro.props.frontmatter;
 ---
 
 <BaseLayout {...Astro.props.frontmatter}>
   <article class="prose">
+    {hideTitle ? null : <h1>{title}</h1>}
     <slot />
   </article>
 </BaseLayout>
