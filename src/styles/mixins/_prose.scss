@@ -1,11 +1,22 @@
 @use "sass:list";
+@use "sass:string";
 
 @mixin prose($els...) {
   $selector: ();
 
   @each $el in $els {
-    $selector: list.append($selector, ".prose #{$el}", "comma");
-    $selector: list.append($selector, "#{$el}.prose", "comma");
+    $el: "#{$el}";
+    $base: $el;
+    $pseudo: "";
+
+    @if string.index($el, "::") {
+      $i: string.index($el, "::");
+      $base: string.slice($el, 1, $i - 1);
+      $pseudo: string.slice($el, $i);
+    }
+
+    $selector: list.append($selector, ".prose #{$base}#{$pseudo}", "comma");
+    $selector: list.append($selector, "#{$base}.prose#{$pseudo}", "comma");
   }
 
   @at-root #{$selector} {
