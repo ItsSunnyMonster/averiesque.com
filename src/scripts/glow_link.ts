@@ -74,6 +74,10 @@ class GlowLink {
   startColor: Color;
   endColor: Color;
 
+  intersectionObserver: IntersectionObserver;
+
+  animationFrameRequest: number | null = null;
+
   constructor(linkElement: HTMLAnchorElement) {
     this.linkElement = linkElement;
 
@@ -112,8 +116,21 @@ class GlowLink {
     // Triggers an initial resize
     new ResizeObserver(this.resize.bind(this)).observe(linkElement);
 
-    // tick is a method so we must call bind and provide which object to use as the 'this' object in the function call
-    requestAnimationFrame(this.tick.bind(this));
+    this.intersectionObserver = new IntersectionObserver(([entry]) => {
+      entry?.isIntersecting ? this.start() : this.stop();
+    });
+    this.intersectionObserver.observe(linkElement);
+  }
+
+  start() {
+    if (!this.animationFrameRequest)
+      this.animationFrameRequest = requestAnimationFrame(this.tick.bind(this));
+  }
+
+  stop() {
+    if (this.animationFrameRequest)
+      cancelAnimationFrame(this.animationFrameRequest);
+    this.animationFrameRequest = null;
   }
 
   resize() {
@@ -207,7 +224,7 @@ class GlowLink {
     this.canvasContext.globalAlpha = 1;
     this.canvasContext.shadowBlur = 0;
 
-    requestAnimationFrame(this.tick.bind(this));
+    this.animationFrameRequest = requestAnimationFrame(this.tick.bind(this));
   }
 }
 
