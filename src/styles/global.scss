@@ -3,7 +3,9 @@
 @use "../styles/mixins/prose" as *;
 
 // General Stuff
-* {
+*,
+*::before,
+*::after {
   box-sizing: border-box;
   --base-heading-size: 2.8em;
   --heading-ratio: 1.2;
@@ -102,6 +104,7 @@
 @include prose("a::after") {
   content: "";
   position: absolute;
+  z-index: -1;
 
   bottom: -0.2em;
   left: 0;
@@ -127,5 +130,29 @@
   }
   50% {
     opacity: 0.85;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    transition-duration: 0.001s !important;
+    animation-duration: 0.001s !important;
+    animation-iteration-count: 1 !important;
+  }
+
+  @include prose("a:hover") {
+    color: var(--c-mantle);
+  }
+
+  @include prose("a:hover::after") {
+    height: unset;
+    top: -0.2em;
+    bottom: -0.2em;
+    left: -0.3em;
+    right: -0.3em;
+    border-radius: 0.3em;
+    box-shadow: 0 0 10px 2px color-mix(in srgb, var(--energized-accent) 70%);
   }
 }

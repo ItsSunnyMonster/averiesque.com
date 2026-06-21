@@ -211,8 +211,10 @@ class GlowLink {
   }
 }
 
-document.querySelectorAll(".prose a, a.prose").forEach((el) => {
-  if (el instanceof HTMLAnchorElement) {
-    new GlowLink(el);
-  }
-});
+if (!matchMedia("(prefers-reduced-motion)").matches) {
+  document.querySelectorAll(".prose a, a.prose").forEach((el) => {
+    if (el instanceof HTMLAnchorElement) {
+      new GlowLink(el);
+    }
+  });
+}
