@@ -211,10 +211,10 @@ class GlowLink {
       this.canvasContext.fillStyle = this.startColor
         .lerpTo(this.endColor, 1 - p.lifeRemaining)
         .toHex();
-      this.canvasContext.shadowColor =
-        this.startColor.lerpTo(this.endColor, 1 - p.lifeRemaining).toHex() +
-        "CC";
-      this.canvasContext.shadowBlur = p.radius * 3;
+      // this.canvasContext.shadowColor =
+      //   this.startColor.lerpTo(this.endColor, 1 - p.lifeRemaining).toHex() +
+      //   "CC";
+      // this.canvasContext.shadowBlur = p.radius * 3;
       this.canvasContext.beginPath();
       this.canvasContext.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
       this.canvasContext.fill();
