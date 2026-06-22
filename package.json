@@ -12,7 +12,7 @@
     "@astrojs/mdx": "^5.0.6",
     "@catppuccin/palette": "^1.8.0",
     "astro": "^6.4.8",
-    "sass": "^1.97.3"
+    "sass": "^1.101.0"
   },
   "devDependencies": {
     "prettier": "3.8.3",
