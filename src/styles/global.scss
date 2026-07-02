@@ -11,6 +11,11 @@
   --heading-ratio: 1.2;
 }
 
+::selection {
+  background-color: var(--unenergized-accent);
+  color: var(--c-crust);
+}
+
 // Headers
 @include prose(h1, h2, h3, h4, h5, h6) {
   @include fonts.header;
