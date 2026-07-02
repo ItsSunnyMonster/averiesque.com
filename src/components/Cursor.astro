@@ -1,7 +1,11 @@
-<div id="cursor"></div>
+<div id="cursor">
+  <svg version="1.1" width="24" height="24" xmlns="http://www.w3.org/2000/svg">
+    <rect width="24" height="24" rx="12" ry="12" x="0" y="0"></rect>
+  </svg>
+</div>
 
 <script>
-  import { lerp } from "../scripts/utils";
+  import { lerp, distance } from "../scripts/utils";
 
   let cursorTargetX = 0;
   let cursorTargetY = 0;
@@ -10,6 +14,7 @@
   let cursorY = 0;
 
   let attractionFactor = 10;
+  let squishificationFactor = 0.003;
 
   let previousTimestamp = 0;
 
@@ -31,11 +36,19 @@
       const deltaTime = (timestamp - previousTimestamp) / 1000;
       previousTimestamp = timestamp;
 
-      console.log(attractionFactor * deltaTime);
-
       cursorX = lerp(cursorX, cursorTargetX, attractionFactor * deltaTime);
       cursorY = lerp(cursorY, cursorTargetY, attractionFactor * deltaTime);
-      cursor.style.transform = `translate3d(${cursorX}px, ${cursorY}px, 0)`;
+
+      const angle = Math.atan2(
+        cursorTargetY - cursorY,
+        cursorTargetX - cursorX,
+      );
+
+      const squish =
+        1 +
+        distance(cursorX, cursorY, cursorTargetX, cursorTargetY) *
+          squishificationFactor;
+      cursor.style.transform = `translate3d(${cursorX}px, ${cursorY}px, 0) rotate(${angle}rad) scale(${squish}, ${1 / squish})`;
       requestAnimationFrame(updateCursorStyles);
     }
 
@@ -58,15 +71,16 @@
     width: 24px;
     height: 24px;
 
-    background-color: var(--unenergized-accent);
-
-    border-radius: 9999px;
     z-index: 9999;
 
     pointer-events: none;
 
-    will-change: opacity;
+    mix-blend-mode: difference;
+  }
 
-    transition: opacity 100ms ease-in-out;
+  #cursor.active > svg {
+    > rect {
+      fill: var(--unenergized-accent);
+    }
   }
 </style>
