@@ -1,3 +1,5 @@
+import { lerp } from "../utils";
+
 // Contains an RGB colour where each colour is a number between 0 and 255
 export default class Color {
   r: number;
@@ -21,9 +23,9 @@ export default class Color {
 
   lerpTo(other: Color, t: number) {
     return new Color(
-      other.r * t + this.r * (1 - t),
-      other.g * t + this.g * (1 - t),
-      other.b * t + this.b * (1 - t),
+      lerp(this.r, other.r, t),
+      lerp(this.g, other.g, t),
+      lerp(this.b, other.b, t),
     );
   }
 

@@ -1,0 +1,72 @@
+<div id="cursor"></div>
+
+<script>
+  import { lerp } from "../scripts/utils";
+
+  let cursorTargetX = 0;
+  let cursorTargetY = 0;
+
+  let cursorX = 0;
+  let cursorY = 0;
+
+  let attractionFactor = 10;
+
+  let previousTimestamp = 0;
+
+  function main() {
+    if (window.matchMedia("(prefers-reduced-motion)").matches) return;
+    if (!window.matchMedia("(pointer: fine)").matches) return;
+
+    const cursor = document.getElementById("cursor")!;
+
+    cursor.classList.add("active");
+    document.body.classList.add("has-custom-cursor");
+
+    window.addEventListener("mousemove", (e) => {
+      cursorTargetX = e.clientX;
+      cursorTargetY = e.clientY;
+    });
+
+    function updateCursorStyles(timestamp: number) {
+      const deltaTime = (timestamp - previousTimestamp) / 1000;
+      previousTimestamp = timestamp;
+
+      console.log(attractionFactor * deltaTime);
+
+      cursorX = lerp(cursorX, cursorTargetX, attractionFactor * deltaTime);
+      cursorY = lerp(cursorY, cursorTargetY, attractionFactor * deltaTime);
+      cursor.style.transform = `translate3d(${cursorX}px, ${cursorY}px, 0)`;
+      requestAnimationFrame(updateCursorStyles);
+    }
+
+    requestAnimationFrame(updateCursorStyles);
+  }
+
+  main();
+</script>
+
+<style lang="scss">
+  #cursor {
+    display: none;
+  }
+
+  #cursor.active {
+    display: block;
+    position: fixed;
+    top: -12px;
+    left: -12px;
+    width: 24px;
+    height: 24px;
+
+    background-color: var(--unenergized-accent);
+
+    border-radius: 9999px;
+    z-index: 9999;
+
+    pointer-events: none;
+
+    will-change: opacity;
+
+    transition: opacity 100ms ease-in-out;
+  }
+</style>
