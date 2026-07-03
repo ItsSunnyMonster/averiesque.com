@@ -5,39 +5,145 @@
 </div>
 
 <script>
-  import { lerp, distance } from "../scripts/utils";
+  import { lerp, distance, distanceFromRect } from "../scripts/utils";
 
+  // Real position of mouse pointer
   let cursorTargetX = 0;
   let cursorTargetY = 0;
 
+  // Blob position
   let cursorX = 0;
   let cursorY = 0;
 
   let attractionFactor = 10;
   let squishificationFactor = 0.003;
 
+  // To calculate delta time
   let previousTimestamp = 0;
+
+  let hoveredProseLink: HTMLAnchorElement | null = null;
+  let hoveredHitbox: HTMLDivElement | null = null;
+
+  function linkHover(link: HTMLAnchorElement) {
+    linkUnhover();
+
+    hoveredProseLink = link;
+
+    hoveredHitbox = document.createElement("div");
+    Object.assign(hoveredHitbox.style, {
+      position: "absolute",
+      inset: "0",
+      zIndex: "10",
+      willChange: "transform",
+    });
+
+    link.appendChild(hoveredHitbox);
+  }
+
+  function linkUnhover() {
+    hoveredProseLink = null;
+    hoveredHitbox?.remove();
+    hoveredHitbox = null;
+  }
 
   function main() {
     if (window.matchMedia("(prefers-reduced-motion)").matches) return;
     if (!window.matchMedia("(pointer: fine)").matches) return;
 
     const cursor = document.getElementById("cursor")!;
+    const proseLinks = document.querySelectorAll(".prose a, a.prose");
+
+    proseLinks.forEach((l) => {
+      let link = l as HTMLAnchorElement;
+      link.addEventListener("mouseenter", () => {
+        linkHover(link);
+      });
+    });
 
     cursor.classList.add("active");
     document.body.classList.add("has-custom-cursor");
 
+    // Update real pointer location
     window.addEventListener("mousemove", (e) => {
       cursorTargetX = e.clientX;
       cursorTargetY = e.clientY;
     });
 
+    // Runs per frame
     function updateCursorStyles(timestamp: number) {
+      cursor.style.setProperty(
+        "--fill",
+        hoveredProseLink
+          ? "var(--energized-accent)"
+          : "var(--unenergized-accent)",
+      );
+
+      // Calculate deltaTime
       const deltaTime = (timestamp - previousTimestamp) / 1000;
       previousTimestamp = timestamp;
 
-      cursorX = lerp(cursorX, cursorTargetX, attractionFactor * deltaTime);
-      cursorY = lerp(cursorY, cursorTargetY, attractionFactor * deltaTime);
+      if (hoveredProseLink) {
+        // Check if the pointer is now hovering something else
+        hoveredHitbox!.style.pointerEvents = "none";
+        const hovered = document.elementFromPoint(cursorTargetX, cursorTargetY);
+        if (
+          hovered !== hoveredProseLink &&
+          hovered?.matches(".prose a, a.prose")
+        ) {
+          linkHover(hovered as HTMLAnchorElement);
+          // Rerun in the same frame
+          previousTimestamp -= deltaTime;
+          updateCursorStyles(timestamp);
+          return;
+        }
+
+        hoveredHitbox!.style.pointerEvents = "auto";
+
+        // Get distance of the pointer away from the rect of the link
+        const boundingBox = hoveredProseLink.getBoundingClientRect();
+        const distance = distanceFromRect(
+          cursorTargetX,
+          cursorTargetY,
+          boundingBox,
+        );
+
+        // Calculate maximum distance of the 'link magnet' from font size
+        const maxDistance =
+          parseFloat(
+            window
+              .getComputedStyle(hoveredProseLink, null)
+              .getPropertyValue("font-size")!
+              .toString(),
+          ) * 3;
+
+        // If distance longer than max distance, unhover
+        if (distance > maxDistance) {
+          linkUnhover();
+          // Rerun this in the same frame
+          previousTimestamp -= deltaTime;
+          updateCursorStyles(timestamp);
+          return;
+        }
+
+        // Move the hitbox right under the pointer so that it still registers as hovering the link
+        hoveredHitbox!.style.transform = `translate3d(calc(${cursorTargetX - boundingBox.left}px - 50%), calc(${cursorTargetY - boundingBox.top}px - 50%), 0)`;
+
+        // Animate smoothly to link position
+        cursorX = lerp(
+          cursorX,
+          boundingBox.x + boundingBox.width / 2,
+          attractionFactor * deltaTime * 1.5,
+        );
+        cursorY = lerp(
+          cursorY,
+          boundingBox.y + boundingBox.height / 2,
+          attractionFactor * deltaTime * 1.5,
+        );
+      } else {
+        // Animate smoothly to pointer position
+        cursorX = lerp(cursorX, cursorTargetX, attractionFactor * deltaTime);
+        cursorY = lerp(cursorY, cursorTargetY, attractionFactor * deltaTime);
+      }
 
       const angle = Math.atan2(
         cursorTargetY - cursorY,
@@ -48,10 +154,14 @@
         1 +
         distance(cursorX, cursorY, cursorTargetX, cursorTargetY) *
           squishificationFactor;
+
+      // Update rendered position of cursor
       cursor.style.transform = `translate3d(${cursorX}px, ${cursorY}px, 0) rotate(${angle}rad) scale(${squish}, ${1 / squish})`;
+
       requestAnimationFrame(updateCursorStyles);
     }
 
+    // Start the first frame
     requestAnimationFrame(updateCursorStyles);
   }
 
@@ -76,11 +186,15 @@
     pointer-events: none;
 
     mix-blend-mode: difference;
+
+    --fill: var(--unenergized-accent);
+
+    will-change: transform;
   }
 
   #cursor.active > svg {
     > rect {
-      fill: var(--unenergized-accent);
+      fill: var(--fill);
     }
   }
 </style>
