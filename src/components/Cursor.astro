@@ -4,6 +4,37 @@
   </svg>
 </div>
 
+<style lang="scss">
+  #cursor {
+    display: none;
+  }
+
+  #cursor.active {
+    display: block;
+    position: fixed;
+    top: -12px;
+    left: -12px;
+    width: 24px;
+    height: 24px;
+
+    z-index: 9999;
+
+    pointer-events: none;
+
+    mix-blend-mode: difference;
+
+    --fill: var(--unenergized-accent);
+
+    will-change: transform;
+  }
+
+  #cursor.active > svg {
+    > rect {
+      fill: var(--fill);
+    }
+  }
+</style>
+
 <script>
   import { lerp, distance, distanceFromRect } from "../scripts/utils";
 
@@ -15,8 +46,9 @@
   let cursorX = 0;
   let cursorY = 0;
 
-  let attractionFactor = 10;
-  let squishificationFactor = 0.003;
+  const attractionFactor = 10;
+  const maximumSquish = 2;
+  const squishStrengthFalloff = 0.005;
 
   // To calculate delta time
   let previousTimestamp = 0;
@@ -44,6 +76,10 @@
     hoveredProseLink = null;
     hoveredHitbox?.remove();
     hoveredHitbox = null;
+  }
+
+  function fallOff(k: number, x: number) {
+    return -Math.expm1(-k * x);
   }
 
   function main() {
@@ -152,8 +188,11 @@
 
       const squish =
         1 +
-        distance(cursorX, cursorY, cursorTargetX, cursorTargetY) *
-          squishificationFactor;
+        (maximumSquish - 1) *
+          fallOff(
+            squishStrengthFalloff,
+            distance(cursorX, cursorY, cursorTargetX, cursorTargetY),
+          );
 
       // Update rendered position of cursor
       cursor.style.transform = `translate3d(${cursorX}px, ${cursorY}px, 0) rotate(${angle}rad) scale(${squish}, ${1 / squish})`;
@@ -167,34 +206,3 @@
 
   main();
 </script>
-
-<style lang="scss">
-  #cursor {
-    display: none;
-  }
-
-  #cursor.active {
-    display: block;
-    position: fixed;
-    top: -12px;
-    left: -12px;
-    width: 24px;
-    height: 24px;
-
-    z-index: 9999;
-
-    pointer-events: none;
-
-    mix-blend-mode: difference;
-
-    --fill: var(--unenergized-accent);
-
-    will-change: transform;
-  }
-
-  #cursor.active > svg {
-    > rect {
-      fill: var(--fill);
-    }
-  }
-</style>
