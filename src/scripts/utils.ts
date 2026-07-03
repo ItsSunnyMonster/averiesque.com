@@ -9,5 +9,17 @@ export function lerp(from: number, to: number, t: number) {
 }
 
 export function distance(x1: number, y1: number, x2: number, y2: number) {
-  return Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2));
+  return Math.hypot(x2 - x1, y2 - y1);
+}
+
+export type RectLike = Pick<DOMRect, "left" | "right" | "top" | "bottom">;
+
+export function distanceFromRect(x: number, y: number, rect: RectLike): number {
+  const nearestX = Math.max(rect.left, Math.min(x, rect.right));
+  const nearestY = Math.max(rect.top, Math.min(y, rect.bottom));
+
+  const dx = x - nearestX;
+  const dy = y - nearestY;
+
+  return Math.hypot(dx, dy);
 }
