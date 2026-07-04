@@ -1,6 +1,6 @@
 <div id="cursor">
-  <svg version="1.1" width="24" height="24" xmlns="http://www.w3.org/2000/svg">
-    <rect width="24" height="24" rx="12" ry="12" x="0" y="0"></rect>
+  <svg version="1.1" xmlns="http://www.w3.org/2000/svg">
+    <rect rx="12" ry="12" x="0" y="0"></rect>
   </svg>
 </div>
 
@@ -14,8 +14,11 @@
     position: fixed;
     top: -12px;
     left: -12px;
-    width: 24px;
-    height: 24px;
+
+    --width: 24px;
+    --height: 24px;
+    width: var(--width);
+    height: var(--height);
 
     z-index: 9999;
 
@@ -24,6 +27,7 @@
     mix-blend-mode: difference;
 
     --fill: var(--unenergized-accent);
+    --radius: 12px;
 
     will-change: transform;
   }
@@ -31,20 +35,46 @@
   #cursor.active > svg {
     > rect {
       fill: var(--fill);
+      width: var(--width);
+      height: var(--height);
+      rx: var(--radius);
+      ry: var(--radius);
+      transition: fill 300ms ease-in-out;
     }
   }
 </style>
 
 <script>
-  import { lerp, distance, distanceFromRect } from "../scripts/utils";
+  import {
+    lerp,
+    distance,
+    distanceFromRect,
+    customPropertyToPx,
+  } from "../scripts/utils";
+
+  type CursorBlobParams = {
+    x: number;
+    y: number;
+    width: number;
+    height: number;
+    squish: number;
+    angle: number;
+    radius: number;
+  };
 
   // Real position of mouse pointer
   let cursorTargetX = 0;
   let cursorTargetY = 0;
 
-  // Blob position
-  let cursorX = 0;
-  let cursorY = 0;
+  let cursorBlobParams: CursorBlobParams = {
+    x: 0,
+    y: 0,
+    width: 24,
+    height: 24,
+    squish: 1,
+    angle: 0,
+    radius: 12,
+  };
 
   const attractionFactor = 10;
   const maximumSquish = 2;
@@ -70,9 +100,12 @@
     });
 
     link.appendChild(hoveredHitbox);
+
+    link.setAttribute("data-hovered", "");
   }
 
   function linkUnhover() {
+    hoveredProseLink?.removeAttribute("data-hovered");
     hoveredProseLink = null;
     hoveredHitbox?.remove();
     hoveredHitbox = null;
@@ -144,13 +177,10 @@
         );
 
         // Calculate maximum distance of the 'link magnet' from font size
+        const linkStyle = window.getComputedStyle(hoveredProseLink, null);
+
         const maxDistance =
-          parseFloat(
-            window
-              .getComputedStyle(hoveredProseLink, null)
-              .getPropertyValue("font-size")!
-              .toString(),
-          ) * 3;
+          parseFloat(linkStyle.getPropertyValue("font-size")!.toString()) * 3;
 
         // If distance longer than max distance, unhover
         if (distance > maxDistance) {
@@ -164,38 +194,104 @@
         // Move the hitbox right under the pointer so that it still registers as hovering the link
         hoveredHitbox!.style.transform = `translate3d(calc(${cursorTargetX - boundingBox.left}px - 50%), calc(${cursorTargetY - boundingBox.top}px - 50%), 0)`;
 
+        const paddingX = customPropertyToPx(hoveredProseLink, "--hover-px");
+        const paddingY = customPropertyToPx(hoveredProseLink, "--hover-py");
+
         // Animate smoothly to link position
-        cursorX = lerp(
-          cursorX,
-          boundingBox.x + boundingBox.width / 2,
-          attractionFactor * deltaTime * 1.5,
+        cursorBlobParams.x = lerp(
+          cursorBlobParams.x,
+          boundingBox.x + 12 - paddingX,
+          attractionFactor * deltaTime * 1.3,
         );
-        cursorY = lerp(
-          cursorY,
-          boundingBox.y + boundingBox.height / 2,
-          attractionFactor * deltaTime * 1.5,
+        cursorBlobParams.y = lerp(
+          cursorBlobParams.y,
+          boundingBox.y + 12 - paddingY,
+          attractionFactor * deltaTime * 1.3,
+        );
+
+        cursorBlobParams.angle = 0;
+        cursorBlobParams.squish = 1;
+
+        cursorBlobParams.width = lerp(
+          cursorBlobParams.width,
+          boundingBox.width + paddingX * 2,
+          attractionFactor * deltaTime * 1.3,
+        );
+        cursorBlobParams.height = lerp(
+          cursorBlobParams.height,
+          boundingBox.height + paddingY * 2,
+          attractionFactor * deltaTime * 1.3,
+        );
+        cursorBlobParams.radius = lerp(
+          cursorBlobParams.radius,
+          6,
+          attractionFactor * deltaTime * 1.3,
         );
       } else {
         // Animate smoothly to pointer position
-        cursorX = lerp(cursorX, cursorTargetX, attractionFactor * deltaTime);
-        cursorY = lerp(cursorY, cursorTargetY, attractionFactor * deltaTime);
-      }
+        cursorBlobParams.x = lerp(
+          cursorBlobParams.x,
+          cursorTargetX,
+          attractionFactor * deltaTime,
+        );
+        cursorBlobParams.y = lerp(
+          cursorBlobParams.y,
+          cursorTargetY,
+          attractionFactor * deltaTime,
+        );
 
-      const angle = Math.atan2(
-        cursorTargetY - cursorY,
-        cursorTargetX - cursorX,
-      );
+        // Animate rect shrinking first, before starting to animate circle squishing
+        // This is because the angle changing while cursor is still in rect form is very ugly
+        if (cursorBlobParams.width - 24 > 0.001) {
+          cursorBlobParams.width = lerp(
+            cursorBlobParams.width,
+            24,
+            attractionFactor * deltaTime * 1.3,
+          );
+          cursorBlobParams.height = lerp(
+            cursorBlobParams.height,
+            24,
+            attractionFactor * deltaTime * 1.3,
+          );
+          cursorBlobParams.radius = lerp(
+            cursorBlobParams.radius,
+            12,
+            attractionFactor * deltaTime * 1.3,
+          );
+        } else {
+          cursorBlobParams.width = 24;
+          cursorBlobParams.height = 24;
+          cursorBlobParams.radius = 12;
 
-      const squish =
-        1 +
-        (maximumSquish - 1) *
-          fallOff(
-            squishStrengthFalloff,
-            distance(cursorX, cursorY, cursorTargetX, cursorTargetY),
+          const mouseDistance = distance(
+            cursorBlobParams.x,
+            cursorBlobParams.y,
+            cursorTargetX,
+            cursorTargetY,
           );
 
+          cursorBlobParams.angle =
+            mouseDistance < 0.001
+              ? 0
+              : Math.atan2(
+                  cursorTargetY - cursorBlobParams.y,
+                  cursorTargetX - cursorBlobParams.x,
+                );
+
+          cursorBlobParams.squish =
+            mouseDistance < 0.001
+              ? 1
+              : 1 +
+                (maximumSquish - 1) *
+                  fallOff(squishStrengthFalloff, mouseDistance);
+        }
+      }
+
       // Update rendered position of cursor
-      cursor.style.transform = `translate3d(${cursorX}px, ${cursorY}px, 0) rotate(${angle}rad) scale(${squish}, ${1 / squish})`;
+      cursor.style.transform = `translate3d(${cursorBlobParams.x}px, ${cursorBlobParams.y}px, 0) rotate(${cursorBlobParams.angle}rad) scale(${cursorBlobParams.squish}, ${1 / cursorBlobParams.squish})`;
+      cursor.style.setProperty("--width", `${cursorBlobParams.width}px`);
+      cursor.style.setProperty("--height", `${cursorBlobParams.height}px`);
+      cursor.style.setProperty("--radius", `${cursorBlobParams.radius}px`);
 
       requestAnimationFrame(updateCursorStyles);
     }

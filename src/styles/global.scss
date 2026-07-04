@@ -104,6 +104,9 @@
 
   --underline-color: var(--energized-accent);
   --particle-fade-color: var(--energized-alt);
+
+  --hover-px: 0.5em;
+  --hover-py: 0.25em;
 }
 
 @include prose("a::after") {
@@ -125,7 +128,14 @@
     0 -10px 28px 2px color-mix(in srgb, var(--underline-color) 25%),
     0 -26px 50px 4px color-mix(in srgb, var(--underline-color) 8%);
 
-  animation: rodPulse 2.8s ease-in-out infinite;
+  animation: rodPulse 2s ease-in-out infinite;
+}
+
+a[data-hovered].prose::after,
+.prose a[data-hovered]::after,
+a.prose[data-hovered] canvas,
+.prose a[data-hovered] canvas {
+  display: none;
 }
 
 @keyframes rodPulse {
