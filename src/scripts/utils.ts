@@ -24,7 +24,7 @@ export function distanceFromRect(x: number, y: number, rect: RectLike): number {
   return Math.hypot(dx, dy);
 }
 
-export function customPropertyToPx(element, propName) {
+export function customPropertyToPx(element: HTMLElement, propName: string) {
   const probe = document.createElement("div");
   probe.style.position = "absolute";
   probe.style.visibility = "hidden";
