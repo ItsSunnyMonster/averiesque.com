@@ -109,6 +109,12 @@
   --hover-py: 0.25em;
 }
 
+.has-custom-cursor {
+  @include prose(a) {
+    will-change: transform;
+  }
+}
+
 @include prose("a::after") {
   content: "";
   position: absolute;

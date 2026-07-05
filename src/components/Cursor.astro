@@ -52,7 +52,7 @@
     customPropertyToPx,
   } from "../scripts/utils";
 
-  type CursorBlobParams = {
+  interface CursorBlobParams {
     x: number;
     y: number;
     width: number;
@@ -60,7 +60,22 @@
     squish: number;
     angle: number;
     radius: number;
-  };
+    offsetX: number;
+    offsetY: number;
+  }
+
+  interface LinkSpringParams {
+    stiffness: number;
+    damping: number;
+    mass: number;
+  }
+
+  interface SpringingLinksProperties {
+    velocity: [number, number];
+    hovered: boolean;
+    translation: [number, number];
+    targetTranslation: [number, number];
+  }
 
   // Real position of mouse pointer
   let cursorTargetX = 0;
@@ -74,11 +89,22 @@
     squish: 1,
     angle: 0,
     radius: 12,
+    offsetX: 0,
+    offsetY: 0,
+  };
+
+  const linkSpringParams: LinkSpringParams = {
+    stiffness: 500,
+    damping: 5,
+    mass: 0.5,
   };
 
   const attractionFactor = 10;
   const maximumSquish = 2;
   const squishStrengthFalloff = 0.008;
+
+  const hoverAttractionFalloff = 0.008;
+  const maxAttractionDistancePerFontSize = 0.7;
 
   // To calculate delta time
   let previousTimestamp = 0;
@@ -86,10 +112,38 @@
   let hoveredProseLink: HTMLAnchorElement | null = null;
   let hoveredHitbox: HTMLDivElement | null = null;
 
+  let springingLinks: Map<HTMLAnchorElement, SpringingLinksProperties> =
+    new Map();
+
+  function springStep(
+    current: number,
+    target: number,
+    dt: number,
+    velocity: number,
+  ) {
+    const force = -linkSpringParams.stiffness * (current - target);
+    const dampingForce = -linkSpringParams.damping * velocity;
+    const acceleration = (force + dampingForce) / linkSpringParams.mass;
+    velocity += acceleration * dt;
+    current += velocity * dt;
+    return [current, velocity] as const;
+  }
+
   function linkHover(link: HTMLAnchorElement) {
     linkUnhover();
 
     hoveredProseLink = link;
+
+    if (!springingLinks.has(hoveredProseLink)) {
+      springingLinks.set(hoveredProseLink, {
+        velocity: [0, 0],
+        hovered: true,
+        translation: [0, 0],
+        targetTranslation: [0, 0],
+      });
+    } else {
+      springingLinks.get(hoveredProseLink)!.hovered = true;
+    }
 
     hoveredHitbox = document.createElement("div");
     Object.assign(hoveredHitbox.style, {
@@ -105,14 +159,18 @@
   }
 
   function linkUnhover() {
+    if (hoveredProseLink) {
+      springingLinks.get(hoveredProseLink)!.targetTranslation = [0, 0];
+      springingLinks.get(hoveredProseLink)!.hovered = false;
+    }
     hoveredProseLink?.removeAttribute("data-hovered");
     hoveredProseLink = null;
     hoveredHitbox?.remove();
     hoveredHitbox = null;
   }
 
-  function fallOff(k: number, x: number) {
-    return -Math.expm1(-k * x);
+  function inverseFalloff(k: number, x: number) {
+    return x >= 0 ? -Math.expm1(-k * x) : Math.expm1(k * x);
   }
 
   function main() {
@@ -178,9 +236,10 @@
 
         // Calculate maximum distance of the 'link magnet' from font size
         const linkStyle = window.getComputedStyle(hoveredProseLink, null);
-
-        const maxDistance =
-          parseFloat(linkStyle.getPropertyValue("font-size")!.toString()) * 3;
+        const fontSize = parseFloat(
+          linkStyle.getPropertyValue("font-size")!.toString(),
+        );
+        const maxDistance = fontSize * 6;
 
         // If distance longer than max distance, unhover
         if (distance > maxDistance) {
@@ -197,36 +256,78 @@
         const paddingX = customPropertyToPx(hoveredProseLink, "--hover-px");
         const paddingY = customPropertyToPx(hoveredProseLink, "--hover-py");
 
-        // Animate smoothly to link position
-        cursorBlobParams.x = lerp(
-          cursorBlobParams.x,
-          boundingBox.x + 12 - paddingX,
-          attractionFactor * deltaTime * 1.3,
-        );
-        cursorBlobParams.y = lerp(
-          cursorBlobParams.y,
-          boundingBox.y + 12 - paddingY,
-          attractionFactor * deltaTime * 1.3,
-        );
+        // Top left corner
+        const linkX = boundingBox.x + 12 - paddingX;
+        const linkY = boundingBox.y + 12 - paddingY;
+
+        // Falloff offset based on font size and cursor distance
+        cursorBlobParams.offsetX =
+          maxAttractionDistancePerFontSize *
+          fontSize *
+          inverseFalloff(
+            hoverAttractionFalloff,
+            cursorTargetX - linkX - boundingBox.width / 2,
+          );
+        cursorBlobParams.offsetY =
+          maxAttractionDistancePerFontSize *
+          fontSize *
+          inverseFalloff(
+            hoverAttractionFalloff,
+            cursorTargetY - linkY - boundingBox.height / 2,
+          );
+
+        const targetX = linkX + cursorBlobParams.offsetX;
+        const targetY = linkY + cursorBlobParams.offsetY;
+        // const targetX = linkX;
+        // const targetY = linkY;
+
+        springingLinks.get(hoveredProseLink)!.targetTranslation = [
+          cursorBlobParams.offsetX / 1.7,
+          cursorBlobParams.offsetY / 1.7,
+        ];
+
+        // Don't animate more if the initial growth animation is finished.
+        if (
+          Math.abs(boundingBox.width + paddingX * 2 - cursorBlobParams.width) <
+          0.001
+        ) {
+          cursorBlobParams.x = targetX;
+          cursorBlobParams.y = targetY;
+          cursorBlobParams.width = boundingBox.width + paddingX * 2;
+          cursorBlobParams.height = boundingBox.height + paddingY * 2;
+          cursorBlobParams.radius = 6;
+        } else {
+          // Animate smoothly to link position
+          cursorBlobParams.x = lerp(
+            cursorBlobParams.x,
+            targetX,
+            attractionFactor * deltaTime * 1.3,
+          );
+          cursorBlobParams.y = lerp(
+            cursorBlobParams.y,
+            targetY,
+            attractionFactor * deltaTime * 1.3,
+          );
+
+          cursorBlobParams.width = lerp(
+            cursorBlobParams.width,
+            boundingBox.width + paddingX * 2,
+            attractionFactor * deltaTime * 1.3,
+          );
+          cursorBlobParams.height = lerp(
+            cursorBlobParams.height,
+            boundingBox.height + paddingY * 2,
+            attractionFactor * deltaTime * 1.3,
+          );
+          cursorBlobParams.radius = lerp(
+            cursorBlobParams.radius,
+            6,
+            attractionFactor * deltaTime * 1.3,
+          );
+        }
 
         cursorBlobParams.angle = 0;
         cursorBlobParams.squish = 1;
-
-        cursorBlobParams.width = lerp(
-          cursorBlobParams.width,
-          boundingBox.width + paddingX * 2,
-          attractionFactor * deltaTime * 1.3,
-        );
-        cursorBlobParams.height = lerp(
-          cursorBlobParams.height,
-          boundingBox.height + paddingY * 2,
-          attractionFactor * deltaTime * 1.3,
-        );
-        cursorBlobParams.radius = lerp(
-          cursorBlobParams.radius,
-          6,
-          attractionFactor * deltaTime * 1.3,
-        );
       } else {
         // Animate smoothly to pointer position
         cursorBlobParams.x = lerp(
@@ -283,9 +384,38 @@
               ? 1
               : 1 +
                 (maximumSquish - 1) *
-                  fallOff(squishStrengthFalloff, mouseDistance);
+                  inverseFalloff(squishStrengthFalloff, mouseDistance);
         }
       }
+
+      // Update all links
+      springingLinks.forEach((p, l) => {
+        [p.translation[0], p.velocity[0]] = springStep(
+          p.translation[0],
+          p.targetTranslation[0],
+          deltaTime,
+          p.velocity[0],
+        );
+        [p.translation[1], p.velocity[1]] = springStep(
+          p.translation[1],
+          p.targetTranslation[1],
+          deltaTime,
+          p.velocity[1],
+        );
+
+        l.style.transform = `translate3d(${p.translation[0]}px, ${p.translation[1]}px, 0)`;
+
+        const settled =
+          Math.abs(p.translation[0] - p.targetTranslation[0]) < 0.001 &&
+          Math.abs(p.translation[1] - p.targetTranslation[1]) < 0.001 &&
+          Math.abs(p.velocity[0]) < 0.001 &&
+          Math.abs(p.velocity[1]) < 0.001;
+
+        if (!p.hovered && settled) {
+          springingLinks.delete(l);
+          l.style.transform = ``;
+        }
+      });
 
       // Update rendered position of cursor
       cursor.style.transform = `translate3d(${cursorBlobParams.x}px, ${cursorBlobParams.y}px, 0) rotate(${cursorBlobParams.angle}rad) scale(${cursorBlobParams.squish}, ${1 / cursorBlobParams.squish})`;
