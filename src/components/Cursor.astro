@@ -57,6 +57,7 @@
     inverseFalloff,
   } from "../scripts/utils";
   import { PropProber } from "../scripts/utils/propertyProber";
+  import { type SpringSimParams, Spring } from "../scripts/utils/springSim";
 
   interface CursorParams {
     x: number;
@@ -70,17 +71,10 @@
     offsetY: number;
   }
 
-  interface SpringSimParams {
-    stiffness: number;
-    damping: number;
-    mass: number;
-  }
-
   interface SpringElementProps {
-    velocity: [number, number];
     hovered: boolean;
-    translation: [number, number];
-    targetTranslation: [number, number];
+    x: Spring;
+    y: Spring;
   }
 
   const propProber = new PropProber();
@@ -125,21 +119,6 @@
 
   let springingElements: Map<HTMLElement, SpringElementProps> = new Map();
 
-  // TODO: Separate this out into a different file
-  function springStep(
-    current: number,
-    target: number,
-    dt: number,
-    velocity: number,
-  ) {
-    const force = -elementSpringSimParams.stiffness * (current - target);
-    const dampingForce = -elementSpringSimParams.damping * velocity;
-    const acceleration = (force + dampingForce) / elementSpringSimParams.mass;
-    velocity += acceleration * dt;
-    current += velocity * dt;
-    return [current, velocity] as const;
-  }
-
   function elementHover(el: HTMLElement) {
     elementUnhover();
 
@@ -147,10 +126,9 @@
 
     if (!springingElements.has(hoveredElement)) {
       springingElements.set(hoveredElement, {
-        velocity: [0, 0],
         hovered: true,
-        translation: [0, 0],
-        targetTranslation: [0, 0],
+        x: new Spring(elementSpringSimParams, 0),
+        y: new Spring(elementSpringSimParams, 0),
       });
     } else {
       springingElements.get(hoveredElement)!.hovered = true;
@@ -171,7 +149,8 @@
 
   function elementUnhover() {
     if (hoveredElement) {
-      springingElements.get(hoveredElement)!.targetTranslation = [0, 0];
+      springingElements.get(hoveredElement)!.x.setTarget(0);
+      springingElements.get(hoveredElement)!.y.setTarget(0);
       springingElements.get(hoveredElement)!.hovered = false;
     }
     hoveredElement?.removeAttribute("data-hovered");
@@ -291,10 +270,12 @@
         // const targetX = linkX;
         // const targetY = linkY;
 
-        springingElements.get(hoveredElement)!.targetTranslation = [
-          cursorParams.offsetX / 1.7,
-          cursorParams.offsetY / 1.7,
-        ];
+        springingElements
+          .get(hoveredElement)!
+          .x.setTarget(cursorParams.offsetX / 1.7);
+        springingElements
+          .get(hoveredElement)!
+          .y.setTarget(cursorParams.offsetY / 1.7);
 
         // Don't animate more if the initial growth animation is finished.
         if (
@@ -400,28 +381,12 @@
 
       // Update all elements
       springingElements.forEach((p, l) => {
-        [p.translation[0], p.velocity[0]] = springStep(
-          p.translation[0],
-          p.targetTranslation[0],
-          deltaTime,
-          p.velocity[0],
-        );
-        [p.translation[1], p.velocity[1]] = springStep(
-          p.translation[1],
-          p.targetTranslation[1],
-          deltaTime,
-          p.velocity[1],
-        );
+        let x = p.x.step(deltaTime);
+        let y = p.y.step(deltaTime);
 
-        l.style.transform = `translate3d(${p.translation[0]}px, ${p.translation[1]}px, 0)`;
+        l.style.transform = `translate3d(${x}px, ${y}px, 0)`;
 
-        const settled =
-          Math.abs(p.translation[0] - p.targetTranslation[0]) < 0.001 &&
-          Math.abs(p.translation[1] - p.targetTranslation[1]) < 0.001 &&
-          Math.abs(p.velocity[0]) < 0.001 &&
-          Math.abs(p.velocity[1]) < 0.001;
-
-        if (!p.hovered && settled) {
+        if (!p.hovered && p.x.isSettled() && p.y.isSettled()) {
           springingElements.delete(l);
           l.style.transform = ``;
         }
