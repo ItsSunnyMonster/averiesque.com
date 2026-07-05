@@ -23,3 +23,8 @@ export function distanceFromRect(x: number, y: number, rect: RectLike): number {
 
   return Math.hypot(dx, dy);
 }
+
+// Inverse falloff function mirrored across the y axis
+export function inverseFalloff(k: number, x: number) {
+  return x >= 0 ? -Math.expm1(-k * x) : Math.expm1(k * x);
+}

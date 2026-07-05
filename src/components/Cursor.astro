@@ -50,7 +50,12 @@
 </style>
 
 <script>
-  import { lerp, distance, distanceFromRect } from "../scripts/utils";
+  import {
+    lerp,
+    distance,
+    distanceFromRect,
+    inverseFalloff,
+  } from "../scripts/utils";
   import { PropProber } from "../scripts/utils/propertyProber";
 
   interface CursorParams {
@@ -173,11 +178,6 @@
     hoveredElement = null;
     hoveredHitbox?.remove();
     hoveredHitbox = null;
-  }
-
-  // TODO: Separate this into a different file
-  function inverseFalloff(k: number, x: number) {
-    return x >= 0 ? -Math.expm1(-k * x) : Math.expm1(k * x);
   }
 
   function main() {
