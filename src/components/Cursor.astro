@@ -45,12 +45,8 @@
 </style>
 
 <script>
-  import {
-    lerp,
-    distance,
-    distanceFromRect,
-    customPropertyToPx,
-  } from "../scripts/utils";
+  import { lerp, distance, distanceFromRect } from "../scripts/utils";
+  import { PropertyProber } from "../scripts/utils/propertyProber";
 
   interface CursorBlobParams {
     x: number;
@@ -76,6 +72,8 @@
     translation: [number, number];
     targetTranslation: [number, number];
   }
+
+  const propProber = new PropertyProber();
 
   // Real position of mouse pointer
   let cursorTargetX = 0;
@@ -106,14 +104,15 @@
   const hoverAttractionFalloff = 0.008;
   const maxAttractionDistancePerFontSize = 0.7;
 
+  const interactablesSelector = ".prose a, a.prose, [data-interactable]";
+
   // To calculate delta time
   let previousTimestamp = 0;
 
-  let hoveredProseLink: HTMLAnchorElement | null = null;
+  let hoveredElement: HTMLElement | null = null;
   let hoveredHitbox: HTMLDivElement | null = null;
 
-  let springingLinks: Map<HTMLAnchorElement, SpringingLinksProperties> =
-    new Map();
+  let springingElements: Map<HTMLElement, SpringingLinksProperties> = new Map();
 
   function springStep(
     current: number,
@@ -129,20 +128,20 @@
     return [current, velocity] as const;
   }
 
-  function linkHover(link: HTMLAnchorElement) {
-    linkUnhover();
+  function elementHover(link: HTMLElement) {
+    elementUnhover();
 
-    hoveredProseLink = link;
+    hoveredElement = link;
 
-    if (!springingLinks.has(hoveredProseLink)) {
-      springingLinks.set(hoveredProseLink, {
+    if (!springingElements.has(hoveredElement)) {
+      springingElements.set(hoveredElement, {
         velocity: [0, 0],
         hovered: true,
         translation: [0, 0],
         targetTranslation: [0, 0],
       });
     } else {
-      springingLinks.get(hoveredProseLink)!.hovered = true;
+      springingElements.get(hoveredElement)!.hovered = true;
     }
 
     hoveredHitbox = document.createElement("div");
@@ -158,13 +157,13 @@
     link.setAttribute("data-hovered", "");
   }
 
-  function linkUnhover() {
-    if (hoveredProseLink) {
-      springingLinks.get(hoveredProseLink)!.targetTranslation = [0, 0];
-      springingLinks.get(hoveredProseLink)!.hovered = false;
+  function elementUnhover() {
+    if (hoveredElement) {
+      springingElements.get(hoveredElement)!.targetTranslation = [0, 0];
+      springingElements.get(hoveredElement)!.hovered = false;
     }
-    hoveredProseLink?.removeAttribute("data-hovered");
-    hoveredProseLink = null;
+    hoveredElement?.removeAttribute("data-hovered");
+    hoveredElement = null;
     hoveredHitbox?.remove();
     hoveredHitbox = null;
   }
@@ -178,12 +177,12 @@
     if (!window.matchMedia("(pointer: fine)").matches) return;
 
     const cursor = document.getElementById("cursor")!;
-    const proseLinks = document.querySelectorAll(".prose a, a.prose");
+    const proseLinks = document.querySelectorAll(interactablesSelector);
 
     proseLinks.forEach((l) => {
       let link = l as HTMLAnchorElement;
       link.addEventListener("mouseenter", () => {
-        linkHover(link);
+        elementHover(link);
       });
     });
 
@@ -200,7 +199,7 @@
     function updateCursorStyles(timestamp: number) {
       cursor.style.setProperty(
         "--fill",
-        hoveredProseLink
+        hoveredElement
           ? "var(--energized-accent)"
           : "var(--unenergized-accent)",
       );
@@ -209,15 +208,15 @@
       const deltaTime = (timestamp - previousTimestamp) / 1000;
       previousTimestamp = timestamp;
 
-      if (hoveredProseLink) {
+      if (hoveredElement) {
         // Check if the pointer is now hovering something else
         hoveredHitbox!.style.pointerEvents = "none";
         const hovered = document.elementFromPoint(cursorTargetX, cursorTargetY);
         if (
-          hovered !== hoveredProseLink &&
-          hovered?.matches(".prose a, a.prose")
+          hovered !== hoveredElement &&
+          hovered?.matches(interactablesSelector)
         ) {
-          linkHover(hovered as HTMLAnchorElement);
+          elementHover(hovered as HTMLElement);
           // Rerun in the same frame
           previousTimestamp -= deltaTime;
           updateCursorStyles(timestamp);
@@ -227,7 +226,7 @@
         hoveredHitbox!.style.pointerEvents = "auto";
 
         // Get distance of the pointer away from the rect of the link
-        const boundingBox = hoveredProseLink.getBoundingClientRect();
+        const boundingBox = hoveredElement.getBoundingClientRect();
         const distance = distanceFromRect(
           cursorTargetX,
           cursorTargetY,
@@ -235,7 +234,7 @@
         );
 
         // Calculate maximum distance of the 'link magnet' from font size
-        const linkStyle = window.getComputedStyle(hoveredProseLink, null);
+        const linkStyle = window.getComputedStyle(hoveredElement, null);
         const fontSize = parseFloat(
           linkStyle.getPropertyValue("font-size")!.toString(),
         );
@@ -243,7 +242,7 @@
 
         // If distance longer than max distance, unhover
         if (distance > maxDistance) {
-          linkUnhover();
+          elementUnhover();
           // Rerun this in the same frame
           previousTimestamp -= deltaTime;
           updateCursorStyles(timestamp);
@@ -253,8 +252,14 @@
         // Move the hitbox right under the pointer so that it still registers as hovering the link
         hoveredHitbox!.style.transform = `translate3d(calc(${cursorTargetX - boundingBox.left}px - 50%), calc(${cursorTargetY - boundingBox.top}px - 50%), 0)`;
 
-        const paddingX = customPropertyToPx(hoveredProseLink, "--hover-px");
-        const paddingY = customPropertyToPx(hoveredProseLink, "--hover-py");
+        // Set default paddings if not present
+        if (!hoveredElement.style.getPropertyValue("--hover-px"))
+          hoveredElement.style.setProperty("--hover-px", "0.5em");
+        if (!hoveredElement.style.getPropertyValue("--hover-py"))
+          hoveredElement.style.setProperty("--hover-py", "0.25em");
+        const paddingX = propProber.propertyToPx(hoveredElement, "--hover-px");
+        const paddingY = propProber.propertyToPx(hoveredElement, "--hover-py");
+        console.log(paddingX, paddingY);
 
         // Top left corner
         const linkX = boundingBox.x + 12 - paddingX;
@@ -281,7 +286,7 @@
         // const targetX = linkX;
         // const targetY = linkY;
 
-        springingLinks.get(hoveredProseLink)!.targetTranslation = [
+        springingElements.get(hoveredElement)!.targetTranslation = [
           cursorBlobParams.offsetX / 1.7,
           cursorBlobParams.offsetY / 1.7,
         ];
@@ -389,7 +394,7 @@
       }
 
       // Update all links
-      springingLinks.forEach((p, l) => {
+      springingElements.forEach((p, l) => {
         [p.translation[0], p.velocity[0]] = springStep(
           p.translation[0],
           p.targetTranslation[0],
@@ -412,7 +417,7 @@
           Math.abs(p.velocity[1]) < 0.001;
 
         if (!p.hovered && settled) {
-          springingLinks.delete(l);
+          springingElements.delete(l);
           l.style.transform = ``;
         }
       });

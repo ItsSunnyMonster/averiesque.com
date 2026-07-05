@@ -23,16 +23,3 @@ export function distanceFromRect(x: number, y: number, rect: RectLike): number {
 
   return Math.hypot(dx, dy);
 }
-
-export function customPropertyToPx(element: HTMLElement, propName: string) {
-  const probe = document.createElement("div");
-  probe.style.position = "absolute";
-  probe.style.visibility = "hidden";
-  probe.style.width = `var(${propName})`;
-  element.appendChild(probe);
-
-  const px = getComputedStyle(probe).width;
-  element.removeChild(probe);
-
-  return parseFloat(px);
-}
