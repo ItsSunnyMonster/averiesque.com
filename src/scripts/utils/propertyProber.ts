@@ -1,4 +1,4 @@
-export class PropertyProber {
+export class PropProber {
   private readonly probe: HTMLDivElement;
 
   private readonly cache: WeakMap<HTMLElement, Map<string, number>> =
