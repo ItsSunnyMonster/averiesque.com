@@ -57,7 +57,7 @@
     inverseFalloff,
   } from "../scripts/utils";
   import { PropProber } from "../scripts/utils/propertyProber";
-  import { type SpringSimParams, Spring } from "../scripts/utils/springSim";
+  import { type SpringSimParams, TwoDSpring } from "../scripts/utils/springSim";
 
   interface CursorParams {
     x: number;
@@ -73,8 +73,7 @@
 
   interface SpringElementProps {
     hovered: boolean;
-    x: Spring;
-    y: Spring;
+    spring: TwoDSpring;
   }
 
   const propProber = new PropProber();
@@ -127,8 +126,14 @@
     if (!springingElements.has(hoveredElement)) {
       springingElements.set(hoveredElement, {
         hovered: true,
-        x: new Spring(elementSpringSimParams, 0),
-        y: new Spring(elementSpringSimParams, 0),
+        spring: new TwoDSpring(
+          elementSpringSimParams,
+          [0, 0],
+          hoveredElement,
+          ([x, y], hovered) => {
+            hovered!.style.transform = `translate3d(${x}px, ${y}px, 0)`;
+          },
+        ),
       });
     } else {
       springingElements.get(hoveredElement)!.hovered = true;
@@ -149,8 +154,7 @@
 
   function elementUnhover() {
     if (hoveredElement) {
-      springingElements.get(hoveredElement)!.x.setTarget(0);
-      springingElements.get(hoveredElement)!.y.setTarget(0);
+      springingElements.get(hoveredElement)!.spring.setTarget([0, 0]);
       springingElements.get(hoveredElement)!.hovered = false;
     }
     hoveredElement?.removeAttribute("data-hovered");
@@ -272,10 +276,10 @@
 
         springingElements
           .get(hoveredElement)!
-          .x.setTarget(cursorParams.offsetX / 1.7);
-        springingElements
-          .get(hoveredElement)!
-          .y.setTarget(cursorParams.offsetY / 1.7);
+          .spring.setTarget([
+            cursorParams.offsetX / 1.7,
+            cursorParams.offsetY / 1.7,
+          ]);
 
         // Don't animate more if the initial growth animation is finished.
         if (
@@ -381,12 +385,9 @@
 
       // Update all elements
       springingElements.forEach((p, l) => {
-        let x = p.x.step(deltaTime);
-        let y = p.y.step(deltaTime);
+        p.spring.step(deltaTime);
 
-        l.style.transform = `translate3d(${x}px, ${y}px, 0)`;
-
-        if (!p.hovered && p.x.isSettled() && p.y.isSettled()) {
+        if (!p.hovered && p.spring.isSettled()) {
           springingElements.delete(l);
           l.style.transform = ``;
         }
