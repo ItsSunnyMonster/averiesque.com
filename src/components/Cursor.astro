@@ -205,7 +205,8 @@
       );
 
       // Calculate deltaTime
-      const deltaTime = (timestamp - previousTimestamp) / 1000;
+      let deltaTimeTemp = (timestamp - previousTimestamp) / 1000;
+      const deltaTime = deltaTimeTemp > 1 / 20 ? 0 : deltaTimeTemp;
       previousTimestamp = timestamp;
 
       if (hoveredElement) {
