@@ -126,10 +126,10 @@
 
   box-shadow:
     // 0 0 4px 1px var(--energized-accent),
-    0 0 10px 2px color-mix(in srgb, var(--underline-color) 70%),
-    0 0 22px 4px color-mix(in srgb, var(--underline-color) 30%),
-    0 -10px 28px 2px color-mix(in srgb, var(--underline-color) 25%),
-    0 -26px 50px 4px color-mix(in srgb, var(--underline-color) 8%);
+    0 0 10px 2px color-mix(in srgb, var(--underline-color) 70%, transparent),
+    0 0 22px 4px color-mix(in srgb, var(--underline-color) 30%, transparent),
+    0 -10px 28px 2px color-mix(in srgb, var(--underline-color) 25%, transparent),
+    0 -26px 50px 4px color-mix(in srgb, var(--underline-color) 8%, transparent);
 
   animation: rodPulse 2s ease-in-out infinite;
 }
