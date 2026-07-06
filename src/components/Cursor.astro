@@ -187,7 +187,11 @@
     });
 
     // Runs per frame
-    function updateCursorStyles(timestamp: number) {
+    function updateCursorStyles(timestamp: number, depth?: number) {
+      if (depth && depth > 3) {
+        requestAnimationFrame(updateCursorStyles);
+      }
+
       cursor.style.setProperty(
         "--fill",
         hoveredElement
@@ -211,7 +215,7 @@
           elementHover(hovered as HTMLElement);
           // Rerun in the same frame
           previousTimestamp -= deltaTime;
-          updateCursorStyles(timestamp);
+          updateCursorStyles(timestamp, depth ? depth + 1 : 1);
           return;
         }
         hoveredHitbox!.style.pointerEvents = "auto";
@@ -232,7 +236,7 @@
           elementUnhover();
           // Rerun this in the same frame
           previousTimestamp -= deltaTime;
-          updateCursorStyles(timestamp);
+          updateCursorStyles(timestamp, depth ? depth + 1 : 1);
           return;
         }
 
