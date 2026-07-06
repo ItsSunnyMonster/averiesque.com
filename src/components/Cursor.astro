@@ -218,7 +218,7 @@
 
         // Get distance of the pointer away from the rect of the interactable element
         const boundingBox = hoveredElement.getBoundingClientRect();
-        const distance = distanceFromRect(pointerX, pointerY, boundingBox);
+        const distFromRect = distanceFromRect(pointerX, pointerY, boundingBox);
 
         // Calculate maximum distance of the 'element magnet' from font size
         const elementStyle = window.getComputedStyle(hoveredElement, null);
@@ -228,7 +228,7 @@
         const maxDistance = fontSize * 6;
 
         // If distance longer than max distance, unhover
-        if (distance > maxDistance) {
+        if (distFromRect > maxDistance) {
           elementUnhover();
           // Rerun this in the same frame
           previousTimestamp -= deltaTime;
