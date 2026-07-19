@@ -134,6 +134,32 @@
   animation: rodPulse 2s ease-in-out infinite;
 }
 
+body:not(.has-custom-cursor) {
+  @include prose("a") {
+    transition: color 150ms cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  @include prose("a::after") {
+    transition: all 150ms cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .prose a:active,
+  a.prose:active {
+    color: var(--c-mantle);
+  }
+
+  .prose a:active::after,
+  a.prose:active::after {
+    animation: none;
+    height: calc(100% + 0.4em);
+    left: -0.3em;
+    right: -0.3em;
+    border-radius: 0.3em;
+    box-shadow: 0 0 10px 2px
+      color-mix(in srgb, var(--energized-accent) 70%, transparent);
+  }
+}
+
 a[data-hovered].prose::after,
 .prose a[data-hovered]::after,
 a.prose[data-hovered] canvas,
@@ -171,6 +197,7 @@ a.prose[data-hovered] canvas,
     left: -0.3em;
     right: -0.3em;
     border-radius: 0.3em;
-    box-shadow: 0 0 10px 2px color-mix(in srgb, var(--energized-accent) 70%);
+    box-shadow: 0 0 10px 2px
+      color-mix(in srgb, var(--energized-accent) 70%, transparent);
   }
 }
