@@ -145,11 +145,13 @@ body:not(.has-custom-cursor) {
 
   .prose a:active,
   a.prose:active {
+    transition-duration: 50ms;
     color: var(--c-mantle);
   }
 
   .prose a:active::after,
   a.prose:active::after {
+    transition-duration: 50ms;
     animation: none;
     height: calc(100% + 0.4em);
     left: -0.3em;
