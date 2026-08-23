@@ -3,4 +3,17 @@ updates:
   - package-ecosystem: "npm"
     directory: "/"
     schedule:
-      interval: "daily"
+      interval: "weekly"
+    open-pull-requests-limit: 10
+    groups:
+      astro-ecosystem:
+        patterns:
+          - "astro"
+          - "@astrojs/*"
+      dev-dependencies:
+        dependency-type: "development"
+    ignore:
+      - dependency-name: "astro"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "@astrojs/*"
+        update-types: ["version-update:semver-major"]
