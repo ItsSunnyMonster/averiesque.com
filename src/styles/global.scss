@@ -179,6 +179,15 @@ a.prose[data-hovered] canvas,
   }
 }
 
+html[data-theme="light"] {
+  @include prose("a::after") {
+    box-shadow:
+    // 0 0 4px 1px var(--energized-accent),
+      0 0 10px 2px color-mix(in srgb, var(--underline-color) 70%, transparent);
+    animation: none;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,

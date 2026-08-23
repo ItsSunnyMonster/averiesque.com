@@ -67,6 +67,19 @@ interface Props {}
     animation: gradientScroll 5s linear infinite;
   }
 
+  :root[data-theme="light"] .home-link {
+    background-image: linear-gradient(
+      to right,
+      var(--c-red),
+      var(--c-peach),
+      var(--c-yellow),
+      var(--c-green),
+      var(--c-sapphire),
+      var(--c-mauve),
+      var(--c-red)
+    );
+  }
+
   .content-container {
     max-width: 75ch;
     width: 100%;

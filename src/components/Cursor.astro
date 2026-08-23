@@ -37,6 +37,10 @@
     will-change: transform;
   }
 
+  :root[data-theme="light"] #cursor.active {
+    mix-blend-mode: darken;
+  }
+
   #cursor.active > svg {
     > rect {
       fill: var(--fill);
