@@ -8,7 +8,7 @@ interface Props {}
   <div class="content-container">
     <div class="left-container">
       <!-- <Logo size={60} /> -->
-      <a href="/" class="prose">Averiesque</a>
+      <a href="/" class="prose home-link">Avery's website</a>
     </div>
     <div class="right-container"></div>
   </div>
@@ -44,6 +44,29 @@ interface Props {}
     z-index: 10;
   }
 
+  .home-link {
+    padding-bottom: 2px;
+
+    color: transparent;
+    background-clip: text;
+    background-image: linear-gradient(
+      to right,
+      var(--c-sapphire),
+      var(--c-pink),
+      var(--c-text),
+      var(--c-pink),
+      var(--c-sapphire),
+      var(--c-red),
+      var(--c-red),
+      var(--c-mauve),
+      var(--c-blue),
+      var(--c-blue),
+      var(--c-sapphire)
+    );
+    background-size: 150%;
+    animation: gradientScroll 5s linear infinite;
+  }
+
   .content-container {
     max-width: 75ch;
     width: 100%;
@@ -63,6 +86,16 @@ interface Props {}
     > a {
       font-size: 1.5rem;
       font-weight: 480;
+    }
+  }
+
+  @keyframes gradientScroll {
+    0% {
+      background-position-x: 0%;
+    }
+
+    100% {
+      background-position-x: 300%;
     }
   }
 </style>
