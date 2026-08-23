@@ -1,5 +1,5 @@
 {
-  "name": "sunnymonster-dev",
+  "name": "averiesque-com",
   "type": "module",
   "version": "0.0.1",
   "scripts": {
@@ -9,13 +9,20 @@
     "astro": "astro"
   },
   "dependencies": {
+    "@astrojs/check": "^0.9.10",
     "@astrojs/mdx": "^7.0.4",
     "@catppuccin/palette": "^1.8.0",
     "astro": "^7.1.4",
-    "sass": "^1.103.0"
+    "sass": "^1.103.0",
+    "typescript": "^6.0.3"
   },
   "devDependencies": {
     "prettier": "3.9.6",
-    "prettier-plugin-astro": "0.14.1"
+    "prettier-plugin-astro": "^0.14.1"
+  },
+  "allowScripts": {
+    "@parcel/watcher@2.5.6": true,
+    "esbuild@0.28.1": true,
+    "fsevents@2.3.3": true
   }
 }
