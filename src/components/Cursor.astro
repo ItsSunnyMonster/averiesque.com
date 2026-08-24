@@ -211,6 +211,8 @@
       if (hoveredElement) {
         // Check if the pointer is now hovering something else
         hoveredHitbox!.style.pointerEvents = "none";
+        // FIXME: Github link does not steal hover because browser thinks the element hovered is the SVG
+        // Why the f*** does it work now.
         const hovered = document.elementFromPoint(pointerX, pointerY);
         if (
           hovered !== hoveredElement &&
@@ -248,9 +250,17 @@
         hoveredHitbox!.style.transform = `translate3d(calc(${pointerX - boundingBox.left}px - 50%), calc(${pointerY - boundingBox.top}px - 50%), 0)`;
 
         // Set default paddings if not present
-        if (!hoveredElement.style.getPropertyValue("--hover-px"))
+        if (
+          !window
+            .getComputedStyle(hoveredElement)
+            .getPropertyValue("--hover-px")
+        )
           hoveredElement.style.setProperty("--hover-px", "0.5em");
-        if (!hoveredElement.style.getPropertyValue("--hover-py"))
+        if (
+          !window
+            .getComputedStyle(hoveredElement)
+            .getPropertyValue("--hover-py")
+        )
           hoveredElement.style.setProperty("--hover-py", "0.25em");
 
         // Get padding from CSS property

@@ -1,6 +1,8 @@
 ---
 // import Logo from "./Logo.astro";
 
+import { Icon } from "astro-icon/components";
+
 interface Props {}
 ---
 
@@ -9,6 +11,17 @@ interface Props {}
     <div class="left-container">
       <!-- <Logo size={60} /> -->
       <a href="/" class="prose home-link">Avery's website</a>
+      <div class="social-links-container">
+        <a href="https://github.com/ItsSunnyMonster" data-interactable>
+          <Icon name="fa7-brands:github" />
+        </a>
+        <a href="https://bsky.app/profile/averiesque.com" data-interactable>
+          <Icon name="fa7-brands:bluesky" />
+        </a>
+        <a href="https://youtube.com/@ItsSunnyMonster" data-interactable>
+          <Icon name="fa7-brands:youtube" />
+        </a>
+      </div>
     </div>
     <div class="right-container"></div>
   </div>
@@ -99,6 +112,20 @@ interface Props {}
     > a {
       font-size: 1.5rem;
       font-weight: 480;
+    }
+  }
+
+  .social-links-container {
+    display: flex;
+    gap: 0.5rem;
+
+    > a {
+      color: var(--c-text);
+      display: flex;
+      align-items: center;
+      padding: 0.375rem;
+      --hover-px: 0px;
+      --hover-py: 0px;
     }
   }
 
