@@ -11,6 +11,11 @@
   --heading-ratio: 1.2;
 }
 
+html {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
 ::selection {
   background-color: var(--unenergized-accent);
   color: var(--c-crust);
@@ -20,40 +25,40 @@
 @include prose(h1, h2, h3, h4, h5, h6) {
   @include fonts.header;
 
-  margin-top: 1.25em;
-  margin-bottom: 0.75em;
+  margin-top: 1em;
+  margin-bottom: 0.5em;
   line-height: 1.2;
 }
 
 @include prose(h1) {
   margin-top: 0;
   font-size: var(--base-heading-size);
-  font-weight: 800;
+  // font-weight: 800;
 }
 
 @include prose(h2) {
   font-size: calc(var(--base-heading-size) / var(--heading-ratio));
-  font-weight: 750;
+  // font-weight: 750;
 }
 
 @include prose(h3) {
   font-size: calc(var(--base-heading-size) / pow(var(--heading-ratio), 2));
-  font-weight: 700;
+  // font-weight: 700;
 }
 
 @include prose(h4) {
   font-size: calc(var(--base-heading-size) / pow(var(--heading-ratio), 3));
-  font-weight: 700;
+  // font-weight: 700;
 }
 
 @include prose(h5) {
   font-size: calc(var(--base-heading-size) / pow(var(--heading-ratio), 4));
-  font-weight: 600;
+  // font-weight: 600;
 }
 
 @include prose(h6) {
   font-size: calc(var(--base-heading-size) / pow(var(--heading-ratio), 5));
-  font-weight: 600;
+  // font-weight: 600;
 }
 
 // Body text
@@ -98,6 +103,7 @@
   line-height: 1;
   text-decoration: none;
   color: var(--c-text);
+  font-weight: 500;
 
   position: relative;
   display: inline-block;

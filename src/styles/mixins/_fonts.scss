@@ -1,6 +1,5 @@
 @mixin body {
-  font-family: "Nunito", sans-serif;
-  font-weight: 400;
+  font-family: "Lexend", sans-serif;
   font-optical-sizing: auto;
 }
 
@@ -10,7 +9,7 @@
 }
 
 @mixin header {
-  font-family: "Sour Gummy", sans-serif;
+  font-family: "Jersey 10", sans-serif;
   font-optical-sizing: auto;
-  font-variation-settings: "wdth" 100;
+  font-synthesis: none;
 }
