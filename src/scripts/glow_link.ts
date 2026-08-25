@@ -81,6 +81,7 @@ class GlowLink {
   constructor(linkElement: HTMLAnchorElement) {
     this.linkElement = linkElement;
 
+    // FIXME: This does not currently update when theme is changed.
     const rawStartColor =
       getComputedStyle(linkElement)
         .getPropertyValue("--underline-color")

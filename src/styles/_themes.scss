@@ -6,16 +6,18 @@ html[data-theme="dark"] {
   @each $name, $value in meta.module-variables("mocha") {
     --c-#{$name}: #{$value};
   }
+
+  --unenergized-accent: var(--c-pink);
+  --energized-accent: var(--c-yellow);
+  --energized-alt: var(--c-peach);
 }
 
 html[data-theme="light"] {
   @each $name, $value in meta.module-variables("latte") {
     --c-#{$name}: #{$value};
   }
-}
 
-* {
-  --unenergized-accent: var(--c-mauve);
-  --energized-accent: var(--c-yellow);
-  --energized-alt: var(--c-peach);
+  --unenergized-accent: var(--c-green);
+  --energized-accent: var(--c-lavender);
+  --energized-alt: var(--c-blue);
 }
