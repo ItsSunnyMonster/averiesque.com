@@ -7,8 +7,17 @@ import icon from "astro-icon";
 
 // https://astro.build/config
 export default defineConfig({
+  markdown: {
+    shikiConfig: {
+      themes: {
+        light: "catppuccin-latte",
+        dark: "catppuccin-mocha",
+      },
+    },
+  },
   integrations: [mdx(), icon()],
   image: {
-    layout: 'constrained'
-  }
+    layout: "constrained",
+  },
 });
+
