@@ -23,7 +23,10 @@ interface Props {}
         </a>
       </div>
     </div>
-    <div class="right-container"></div>
+    <div class="right-container">
+      <a href="#" class="prose">-&gt;blog</a>
+      <a href="#" class="prose">-&gt;projects</a>
+    </div>
   </div>
 </header>
 
@@ -31,7 +34,7 @@ interface Props {}
   @use "../styles/mixins/fonts";
 
   a {
-    @include fonts.header;
+    @include fonts.code;
   }
 
   header {
@@ -58,6 +61,7 @@ interface Props {}
   }
 
   .home-link {
+    @include fonts.header;
     font-size: 2rem;
 
     color: transparent;
@@ -125,6 +129,19 @@ interface Props {}
       padding: 0.375rem;
       --hover-px: 0px;
       --hover-py: 0px;
+    }
+  }
+
+  .right-container {
+    display: flex;
+    gap: 0.75rem;
+
+    > a {
+      font-size: 1.25rem;
+
+      &::after {
+        bottom: -5px;
+      }
     }
   }
 
