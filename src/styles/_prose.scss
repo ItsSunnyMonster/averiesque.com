@@ -1,0 +1,223 @@
+@use "../styles/themes";
+@use "../styles/mixins/fonts";
+@use "../styles/mixins/prose" as *;
+
+// Headers
+@include prose(h1, h2, h3, h4, h5, h6) {
+  @include fonts.header;
+
+  margin-top: 1em;
+  margin-bottom: 0.5em;
+  line-height: 1.2;
+}
+
+@include prose(h1) {
+  margin-top: 0;
+  font-size: var(--base-heading-size);
+  // font-weight: 800;
+}
+
+@include prose(h2) {
+  font-size: calc(var(--base-heading-size) / var(--heading-ratio));
+  // font-weight: 750;
+}
+
+@include prose(h3) {
+  font-size: calc(var(--base-heading-size) / pow(var(--heading-ratio), 2));
+  // font-weight: 700;
+}
+
+@include prose(h4) {
+  font-size: calc(var(--base-heading-size) / pow(var(--heading-ratio), 3));
+  // font-weight: 700;
+}
+
+@include prose(h5) {
+  font-size: calc(var(--base-heading-size) / pow(var(--heading-ratio), 4));
+  // font-weight: 600;
+}
+
+@include prose(h6) {
+  font-size: calc(var(--base-heading-size) / pow(var(--heading-ratio), 5));
+  // font-weight: 600;
+}
+
+// Body text
+@include prose(p) {
+  @include fonts.body;
+
+  line-height: 1.8;
+
+  margin-top: 0;
+  margin-bottom: 1.25em;
+}
+
+@include prose(ul) {
+  margin-bottom: 1.5em;
+}
+
+@include prose(li) {
+  margin-bottom: 0.5em;
+}
+
+// Code
+@include prose(code) {
+  @include fonts.code;
+
+  background-color: var(--c-surface0);
+  // color: var(--c-rosewater);
+  padding: 0.15em 0.25em;
+  border: 1px solid var(--c-surface2);
+  border-radius: 0.5em;
+
+  font-size: 0.9em;
+}
+
+.astro-code code {
+  all: unset;
+  @include fonts.code;
+  font-size: 0.9em;
+}
+
+.astro-code {
+  padding: 1.5em;
+  border-radius: 0.7em;
+}
+
+html[data-theme="dark"] {
+  .astro-code,
+  .astro-code span {
+    color: var(--shiki-dark) !important;
+    background-color: var(--shiki-dark-bg) !important;
+    font-style: var(--shiki-dark-font-style) !important;
+    font-weight: var(--shiki-dark-font-weight) !important;
+    text-decoration: var(--shiki-dark-text-decoration) !important;
+  }
+}
+
+// Images
+@include prose(img) {
+  max-width: 100%;
+  height: auto;
+}
+
+// Links
+@include prose(a) {
+  line-height: 1;
+  text-decoration: none;
+  color: var(--c-text);
+  font-weight: 500;
+
+  position: relative;
+  display: inline-block;
+
+  --underline-color: var(--energized-accent);
+  --particle-fade-color: var(--energized-alt);
+}
+
+.has-custom-cursor {
+  @include prose(a) {
+    will-change: transform;
+  }
+}
+
+@include prose("a::after") {
+  content: "";
+  position: absolute;
+  z-index: -1;
+
+  bottom: -0.2em;
+  left: 0;
+  right: 0;
+  height: 3px;
+  border-radius: 3px;
+  background-color: var(--underline-color);
+
+  box-shadow:
+    // 0 0 4px 1px var(--energized-accent),
+    0 0 10px 2px color-mix(in srgb, var(--underline-color) 70%, transparent),
+    0 0 22px 4px color-mix(in srgb, var(--underline-color) 30%, transparent),
+    0 -10px 28px 2px color-mix(in srgb, var(--underline-color) 25%, transparent),
+    0 -26px 50px 4px color-mix(in srgb, var(--underline-color) 8%, transparent);
+
+  animation: rodPulse 2s ease-in-out infinite;
+}
+
+body:not(.has-custom-cursor) {
+  @include prose("a") {
+    transition: color 150ms cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  @include prose("a::after") {
+    transition: all 150ms cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .prose a:active,
+  a.prose:active {
+    transition-duration: 50ms;
+    color: var(--c-mantle);
+  }
+
+  .prose a:active::after,
+  a.prose:active::after {
+    transition-duration: 50ms;
+    animation: none;
+    height: calc(100% + 0.4em);
+    left: -0.3em;
+    right: -0.3em;
+    border-radius: 0.3em;
+    box-shadow: 0 0 10px 2px
+      color-mix(in srgb, var(--energized-accent) 70%, transparent);
+  }
+}
+
+a[data-hovered].prose::after,
+.prose a[data-hovered]::after,
+a.prose[data-hovered] canvas,
+.prose a[data-hovered] canvas {
+  display: none;
+}
+
+@keyframes rodPulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.85;
+  }
+}
+
+html[data-theme="light"] {
+  @include prose("a::after") {
+    box-shadow:
+    // 0 0 4px 1px var(--energized-accent),
+      0 0 10px 2px color-mix(in srgb, var(--underline-color) 70%, transparent);
+    animation: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    transition-duration: 0.001s !important;
+    animation-duration: 0.001s !important;
+    animation-iteration-count: 1 !important;
+  }
+
+  @include prose("a:hover") {
+    color: var(--c-mantle);
+  }
+
+  @include prose("a:hover::after") {
+    height: unset;
+    top: -0.2em;
+    bottom: -0.2em;
+    left: -0.3em;
+    right: -0.3em;
+    border-radius: 0.3em;
+    box-shadow: 0 0 10px 2px
+      color-mix(in srgb, var(--energized-accent) 70%, transparent);
+  }
+}
