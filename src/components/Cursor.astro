@@ -303,7 +303,8 @@
         if (
           Math.abs(boundingBox.width + paddingX * 2 - cursorParams.width) <
             0.001 &&
-          Math.abs(cursorParams.x - targetX) < 1
+          Math.abs(cursorParams.x - targetX) < 1 &&
+          Math.abs(cursorParams.y - targetY) < 1
         ) {
           cursorParams.x = targetX;
           cursorParams.y = targetY;

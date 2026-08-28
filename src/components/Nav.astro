@@ -3,6 +3,8 @@
 
 import { Icon } from "astro-icon/components";
 
+import Hamburger from "./nav/Hamburger.astro";
+
 interface Props {}
 ---
 
@@ -24,8 +26,14 @@ interface Props {}
       </div>
     </div>
     <div class="right-container">
-      <a href="#" class="prose">-&gt;blog</a>
-      <a href="#" class="prose">-&gt;projects</a>
+      <div class="menu-container">
+        <a href="#" class="prose">-&gt;blog</a>
+        <a href="#" class="prose">-&gt;about</a>
+        <a href="#" class="prose">-&gt;projects</a>
+      </div>
+    </div>
+    <div class="narrow-right-container">
+      <Hamburger />
     </div>
   </div>
 </header>
@@ -65,6 +73,11 @@ interface Props {}
       border-bottom: 2px solid var(--c-subtext0);
       padding-bottom: 0.5rem;
       padding-top: 0.5rem;
+    }
+
+    &.bordered {
+      border-bottom: 2px solid var(--c-subtext0);
+      background-color: var(--c-crust);
     }
   }
 
@@ -140,10 +153,9 @@ interface Props {}
     }
   }
 
-  .right-container {
+  .menu-container {
     display: flex;
     gap: 0.75rem;
-
     > a {
       font-size: 1.25rem;
 
@@ -153,6 +165,10 @@ interface Props {}
     }
   }
 
+  .narrow-right-container {
+    display: none;
+  }
+
   @keyframes gradientScroll {
     0% {
       background-position-x: 0%;
@@ -160,6 +176,67 @@ interface Props {}
 
     100% {
       background-position-x: 300%;
+    }
+  }
+
+  @media only screen and (max-width: 700px) {
+    .narrow-right-container {
+      display: block;
+    }
+
+    .right-container {
+      position: absolute;
+      top: 100%;
+      right: 0;
+
+      padding: 2rem;
+
+      background-color: var(--c-crust);
+
+      display: flex;
+      gap: 0.75rem;
+
+      border-left: 2px solid var(--c-subtext0);
+      border-bottom: 2px solid var(--c-subtext0);
+
+      border-bottom-left-radius: 1rem;
+
+      opacity: 0;
+      transform: scaleY(0);
+      transition: all 300ms cubic-bezier(0.4, 0, 0.2, 1);
+      transform-origin: top;
+
+      &::after {
+        content: "";
+        position: absolute;
+        background: transparent;
+        right: 100%;
+        top: 0;
+        width: 2rem;
+        height: 1rem;
+        border-top-right-radius: 1rem;
+        border-top: 2px solid var(--c-subtext0);
+        border-right: 2px solid var(--c-subtext0);
+        box-shadow: 1rem 0 0 0 var(--c-crust);
+      }
+
+      &.open {
+        opacity: 1;
+        transform: scaleY(1);
+      }
+    }
+
+    .social-links-container {
+      flex-direction: column;
+
+      padding-left: 0.5rem;
+      border-left: 2px solid var(--c-surface2);
+    }
+
+    .menu-container {
+      flex-direction: column;
+      align-items: end;
+      justify-content: center;
     }
   }
 </style>
@@ -184,4 +261,22 @@ interface Props {}
 
   window.addEventListener("scroll", handleScroll);
   handleScroll();
+</script>
+
+<script>
+  const icons = document.querySelector(".social-links-container")!;
+  const wideParent = document.querySelector(".left-container")!;
+  const narrowParent = document.querySelector(".right-container")!;
+
+  const mq = window.matchMedia("(max-width: 700px)");
+
+  function placeIcons(isNarrow: boolean) {
+    const target = isNarrow ? narrowParent : wideParent;
+    if (icons.parentElement != target) {
+      target.appendChild(icons);
+    }
+  }
+
+  placeIcons(mq.matches);
+  mq.addEventListener("change", (e) => placeIcons(e.matches));
 </script>

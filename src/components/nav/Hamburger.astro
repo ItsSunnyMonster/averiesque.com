@@ -1,0 +1,100 @@
+---
+
+---
+
+<div class="hamburger" data-interactable>
+  <span></span>
+</div>
+
+<style>
+  .hamburger {
+    display: flex;
+    height: 28px;
+    width: 28px;
+    align-items: center;
+    justify-content: center;
+    touch-action: manipulation;
+    cursor: pointer;
+  }
+
+  @media (min-width: 701px) {
+    .hamburger {
+      display: none;
+    }
+  }
+
+  .hamburger span::before,
+  .hamburger span::after,
+  .hamburger span {
+    content: "";
+    display: block;
+    width: 25px;
+    height: 3px;
+    background-color: var(--c-text);
+    border-radius: 9999px;
+    transition: all 300ms ease-in-out;
+    box-sizing: border-box;
+    transform-origin: center;
+    pointer-events: none;
+  }
+
+  .hamburger span::before,
+  .hamburger span::after {
+    position: absolute;
+  }
+
+  .hamburger span::before {
+    transition-delay: 50ms;
+    bottom: 8px;
+  }
+
+  .hamburger span::after {
+    transition-delay: 100ms;
+    top: 8px;
+  }
+
+  .hamburger span {
+    position: relative;
+  }
+
+  .hamburger.active span {
+    background-color: #ffffff00;
+  }
+
+  .hamburger.active span::before {
+    transform: translate(0, 8px) rotate(45deg);
+  }
+
+  .hamburger.active span::after {
+    transform: translate(0, -8px) rotate(315deg);
+  }
+</style>
+
+<script>
+  const hamburger = document.querySelector(".hamburger")!;
+  const header = document.querySelector("header")!;
+  const rightContainer = document.querySelector(".right-container")!;
+
+  hamburger.addEventListener("click", () => {
+    hamburger.classList.toggle("active");
+    header.classList.toggle("bordered");
+    rightContainer.classList.toggle("open");
+  });
+
+  function closeMenu() {
+    hamburger.classList.remove("active");
+    header.classList.remove("bordered");
+    rightContainer.classList.remove("open");
+  }
+
+  window.addEventListener("resize", closeMenu);
+  window.addEventListener("scroll", closeMenu);
+  window.addEventListener("mousedown", (e) => {
+    if (
+      !rightContainer.contains(e.target as Node) &&
+      !hamburger.contains(e.target as Node)
+    ) {
+      closeMenu();
+    }
+  });
+</script>
