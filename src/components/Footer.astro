@@ -1,0 +1,83 @@
+---
+
+---
+
+<footer>
+  <div class="container">
+    <div class="text-container">
+      <p>made with ❤️ by avery (she/her)</p>
+      <p class="line-2">
+        © 2026 Avery Lin.
+        <span></span>
+        <a href="#">credit</a>
+        <span></span>
+        <a href="#">source</a>
+      </p>
+    </div>
+    <script
+      is:inline
+      type="text/javascript"
+      src="https://storage.ko-fi.com/cdn/widget/Widget_2.js"></script>
+    <script is:inline type="text/javascript">
+      kofiwidget2.init("Buy me a coffee", "#FF6433", "P5P3WD1QV");
+      kofiwidget2.draw();
+    </script>
+  </div>
+</footer>
+
+<style lang="scss">
+  footer {
+    background-color: var(--c-crust);
+    margin-top: auto;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    padding: 2rem;
+    width: 100%;
+  }
+
+  .container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  .text-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  p {
+    font-size: 15px;
+    color: var(--c-overlay0);
+    margin: 0;
+    line-height: 1.75rem;
+  }
+
+  .line-2 > span {
+    display: inline-block;
+    vertical-align: middle;
+    background-color: var(--c-overlay0);
+    border-radius: 9999px;
+    width: 0.25rem;
+    height: 0.25rem;
+    margin-left: 0.5rem;
+    margin-right: 0.5rem;
+  }
+
+  .line-2 > a {
+    color: var(--c-blue);
+    transition: color 300ms cubic-bezier(0.4, 0, 0.2, 1);
+    text-decoration: none;
+    display: inline-block;
+
+    &:hover {
+      color: var(--c-subtext0);
+      text-decoration: underline;
+    }
+  }
+</style>
