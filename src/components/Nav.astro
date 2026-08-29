@@ -4,6 +4,7 @@
 import { Icon } from "astro-icon/components";
 
 import Hamburger from "./nav/Hamburger.astro";
+import ThemeSwitch from "./nav/ThemeSwitch.astro";
 
 interface Props {}
 ---
@@ -31,6 +32,8 @@ interface Props {}
         <a href="#" class="prose">-&gt;about</a>
         <a href="#" class="prose">-&gt;projects</a>
       </div>
+      <div class="separator">|</div>
+      <ThemeSwitch />
     </div>
     <div class="narrow-right-container">
       <Hamburger />
@@ -160,9 +163,14 @@ interface Props {}
       font-size: 1.25rem;
 
       &::after {
-        bottom: -5px;
+        bottom: 0px;
       }
     }
+  }
+
+  .right-container {
+    display: flex;
+    gap: 0.75rem;
   }
 
   .narrow-right-container {
@@ -181,7 +189,10 @@ interface Props {}
 
   @media only screen and (max-width: 700px) {
     .narrow-right-container {
-      display: block;
+      display: flex;
+      flex-direction: row-reverse;
+      gap: 1rem;
+      align-items: center;
     }
 
     .right-container {
@@ -223,6 +234,14 @@ interface Props {}
       &.open {
         opacity: 1;
         transform: scaleY(1);
+      }
+
+      & > .separator {
+        display: none;
+      }
+
+      & a::after {
+        bottom: -5px;
       }
     }
 
@@ -274,6 +293,24 @@ interface Props {}
     const target = isNarrow ? narrowParent : wideParent;
     if (icons.parentElement != target) {
       target.appendChild(icons);
+    }
+  }
+
+  placeIcons(mq.matches);
+  mq.addEventListener("change", (e) => placeIcons(e.matches));
+</script>
+
+<script>
+  const themeSwitch = document.querySelector("#theme-toggle")!;
+  const wideParent = document.querySelector(".right-container")!;
+  const narrowParent = document.querySelector(".narrow-right-container")!;
+
+  const mq = window.matchMedia("(max-width: 700px)");
+
+  function placeIcons(isNarrow: boolean) {
+    const target = isNarrow ? narrowParent : wideParent;
+    if (themeSwitch.parentElement != target) {
+      target.appendChild(themeSwitch);
     }
   }
 
