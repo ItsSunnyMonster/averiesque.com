@@ -132,3 +132,51 @@ const maskId = Math.random();
     }
   }
 </style>
+
+<script>
+  const storageKey = "theme-preference";
+
+  let theme = document.documentElement.dataset.theme!;
+
+  const reflectPreference = (document = window.document) => {
+    document.documentElement.dataset.theme = theme;
+
+    document
+      .querySelector<HTMLButtonElement>("#theme-toggle")
+      ?.setAttribute("aria-label", theme);
+  };
+
+  const setPreference = () => {
+    localStorage.setItem(storageKey, theme);
+    reflectPreference();
+  };
+
+  const onClick = () => {
+    theme = theme === "light" ? "dark" : "light";
+    setPreference();
+  };
+
+  // Run once in initial load
+  reflectPreference();
+
+  // Apply to document before content is swapped in
+  document.addEventListener("astro:before-swap", (event) => {
+    event.newDocument.documentElement.dataset.theme = theme;
+  });
+
+  // Rebind the button after every navigation
+  document.addEventListener("astro:page-load", () => {
+    reflectPreference();
+
+    document
+      .querySelector<HTMLButtonElement>("#theme-toggle")
+      ?.addEventListener("click", onClick);
+  });
+
+  window
+    .matchMedia("(prefers-color-scheme: dark)")
+    .addEventListener("change", ({ matches: isDark }) => {
+      theme = isDark ? "dark" : "light";
+      setPreference();
+    });
+</script>

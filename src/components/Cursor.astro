@@ -3,7 +3,7 @@
 // and any mention of 'pointer' refers to the actual mouse pointer of the user.
 ---
 
-<div id="cursor">
+<div id="cursor" transition:persist>
   <svg version="1.1" xmlns="http://www.w3.org/2000/svg">
     <rect rx="12" ry="12" x="0" y="0"></rect>
   </svg>
@@ -64,6 +64,7 @@
   } from "../scripts/utils";
   import { PropProber } from "../scripts/utils/propertyProber";
   import { type SpringSimParams, TwoDSpring } from "../scripts/utils/springSim";
+  import { isPersisted } from "../scripts/utils";
 
   interface CursorParams {
     x: number;
@@ -174,13 +175,14 @@
     if (!window.matchMedia("(pointer: fine)").matches) return;
 
     const cursor = document.getElementById("cursor")!;
-    const interactables = document.querySelectorAll(interactablesSelector);
 
-    interactables.forEach((el) => {
-      let element = el as HTMLAnchorElement;
-      element.addEventListener("mouseenter", () => {
-        elementHover(element);
-      });
+    document.addEventListener("mouseover", (e) => {
+      const target = (e.target as HTMLElement)?.closest?.(
+        interactablesSelector,
+      ) as HTMLElement | null;
+      if (target && target !== hoveredElement) {
+        elementHover(target);
+      }
     });
 
     cursor.classList.add("active");
@@ -192,10 +194,28 @@
       pointerY = e.clientY;
     });
 
+    document.addEventListener("astro:before-swap", () => {
+      if (hoveredElement && !isPersisted(hoveredElement)) {
+        elementUnhover();
+      }
+      for (const [el] of springingElements) {
+        if (!isPersisted(el)) {
+          el.style.transform = "";
+          springingElements.delete(el);
+        }
+      }
+    });
+
+    document.addEventListener("astro:after-swap", () => {
+      document.body.classList.add("has-custom-cursor");
+      document.getElementById("cursor")?.classList.add("active");
+    });
+
     // Runs per frame
     function updateCursorStyles(timestamp: number, depth?: number) {
       if (depth && depth > 3) {
         requestAnimationFrame(updateCursorStyles);
+        return;
       }
 
       cursor.style.setProperty(

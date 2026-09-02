@@ -1,4 +1,4 @@
-import { randomRange } from "./utils";
+import { randomRange, isPersisted } from "./utils";
 import Color from "./utils/rgbColor";
 
 interface Particle {
@@ -74,6 +74,7 @@ class GlowLink {
   startColor: Color;
   endColor: Color;
 
+  resizeObserver: ResizeObserver;
   intersectionObserver: IntersectionObserver;
 
   animationFrameRequest: number | null = null;
@@ -115,7 +116,8 @@ class GlowLink {
     this.particles = [];
 
     // Triggers an initial resize
-    new ResizeObserver(this.resize.bind(this)).observe(linkElement);
+    this.resizeObserver = new ResizeObserver(this.resize);
+    this.resizeObserver.observe(linkElement);
 
     this.intersectionObserver = new IntersectionObserver(([entry]) => {
       entry?.isIntersecting ? this.start() : this.stop();
@@ -125,7 +127,7 @@ class GlowLink {
 
   start() {
     if (!this.animationFrameRequest)
-      this.animationFrameRequest = requestAnimationFrame(this.tick.bind(this));
+      this.animationFrameRequest = requestAnimationFrame(this.tick);
   }
 
   stop() {
@@ -134,7 +136,7 @@ class GlowLink {
     this.animationFrameRequest = null;
   }
 
-  resize() {
+  readonly resize = () => {
     const rect = this.linkElement.getBoundingClientRect();
     // 32 = 16 x 2 (either side of the underline to allow particles to bleed outside of the link's bounds)
     this.width = rect.width + S.horizontalBleedover * 2;
@@ -146,7 +148,7 @@ class GlowLink {
     this.canvas.height = this.height;
     this.canvas.style.width = this.width + "px";
     this.canvas.style.height = this.height + "px";
-  }
+  };
 
   spawnParticle(deltaTime: number) {
     // Spawn rate scaled on time passed and width (longer link == more particles)
@@ -168,7 +170,7 @@ class GlowLink {
     });
   }
 
-  tick(timestamp: number) {
+  readonly tick = (timestamp: number) => {
     const deltaTime =
       this.previousTimestamp === 0
         ? 0
@@ -225,14 +227,38 @@ class GlowLink {
     this.canvasContext.globalAlpha = 1;
     this.canvasContext.shadowBlur = 0;
 
-    this.animationFrameRequest = requestAnimationFrame(this.tick.bind(this));
+    this.animationFrameRequest = requestAnimationFrame(this.tick);
+  };
+
+  destroy() {
+    this.stop();
+    this.resizeObserver.disconnect();
+    this.intersectionObserver.disconnect();
+    this.canvas.remove();
   }
 }
 
-if (!matchMedia("(prefers-reduced-motion)").matches) {
-  document.querySelectorAll(".prose a, a.prose").forEach((el) => {
-    if (el instanceof HTMLAnchorElement) {
-      new GlowLink(el);
+const glowLinks = new WeakMap<HTMLAnchorElement, GlowLink>();
+const GLOW_LINKS_SELECTOR = ".prose a, a.prose";
+
+function initGlowLinks() {
+  document.querySelectorAll(GLOW_LINKS_SELECTOR).forEach((el) => {
+    if (el instanceof HTMLAnchorElement && !el.dataset.glowInit) {
+      const glowLink = new GlowLink(el);
+      glowLinks.set(el, glowLink);
+      el.dataset.glowInit = "true";
     }
   });
 }
+
+if (!matchMedia("(prefers-reduced-motion)").matches) {
+  document.addEventListener("astro:page-load", initGlowLinks);
+}
+
+document.addEventListener("astro:before-swap", () => {
+  document.querySelectorAll(GLOW_LINKS_SELECTOR).forEach((el) => {
+    if (el instanceof HTMLAnchorElement && !isPersisted(el)) {
+      glowLinks.get(el)?.destroy();
+    }
+  });
+});

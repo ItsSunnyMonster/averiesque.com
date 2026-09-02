@@ -2,6 +2,7 @@
 import Cursor from "../components/Cursor.astro";
 import Nav from "../components/Nav.astro";
 import Footer from "../components/Footer.astro";
+import { ClientRouter } from "astro:transitions";
 
 import "../styles/global.scss";
 
@@ -27,9 +28,17 @@ const { title } = Astro.props;
     <link rel="sitemap" href="/sitemap-index.xml" />
     <meta name="generator" content={Astro.generator} />
     <title>{title}</title>
-    <script is:inline src="./scripts/theme_switch.js"></script>
+
+    <script is:inline>
+      const key = "theme-preference";
+
+      document.documentElement.dataset.theme =
+        localStorage.getItem(key) ??
+        (matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
+    </script>
+    <ClientRouter />
   </head>
-  <body>
+  <body transition:animate="none">
     <Cursor />
     <Nav />
     <main>
@@ -97,6 +106,7 @@ const { title } = Astro.props;
   // }
 
   html {
+    // FIXME: If there is no scrollbar there is some dead space on the right
     scrollbar-gutter: stable;
   }
 

@@ -28,3 +28,7 @@ export function distanceFromRect(x: number, y: number, rect: RectLike): number {
 export function inverseFalloff(k: number, x: number) {
   return x >= 0 ? -Math.expm1(-k * x) : Math.expm1(k * x);
 }
+
+export function isPersisted(el: HTMLElement): boolean {
+  return el.closest("[data-astro-transition-persist]") !== null;
+}
