@@ -55,7 +55,8 @@ const { title } = Astro.props;
   html,
   body {
     margin: 0;
-    width: 100%;
+    width: 100vw;
+    overflow-x: clip;
     height: 100%;
   }
 
@@ -105,10 +106,9 @@ const { title } = Astro.props;
   //   }
   // }
 
-  html {
-    // FIXME: If there is no scrollbar there is some dead space on the right
-    scrollbar-gutter: stable;
-  }
+  // html {
+  //   // scrollbar-gutter: stable;
+  // }
 
   main {
     --padding-x: 2rem;
