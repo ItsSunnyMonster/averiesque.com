@@ -233,9 +233,6 @@
       if (hoveredElement) {
         // Check if the pointer is now hovering something else
         hoveredHitbox!.style.pointerEvents = "none";
-        // FIXME: Github link does not steal hover because browser thinks the element hovered is the SVG
-        // Why the f*** does it work now.
-        //
         const hovered = document.elementFromPoint(pointerX, pointerY);
         const target = (hovered as HTMLElement)?.closest?.(
           interactablesSelector,
