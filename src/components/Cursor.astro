@@ -235,12 +235,13 @@
         hoveredHitbox!.style.pointerEvents = "none";
         // FIXME: Github link does not steal hover because browser thinks the element hovered is the SVG
         // Why the f*** does it work now.
+        //
         const hovered = document.elementFromPoint(pointerX, pointerY);
-        if (
-          hovered !== hoveredElement &&
-          hovered?.matches(interactablesSelector)
-        ) {
-          elementHover(hovered as HTMLElement);
+        const target = (hovered as HTMLElement)?.closest?.(
+          interactablesSelector,
+        ) as HTMLElement | null;
+        if (target && target !== hoveredElement) {
+          elementHover(target! as HTMLElement);
           // Rerun in the same frame
           previousTimestamp -= deltaTime;
           updateCursorStyles(timestamp, depth ? depth + 1 : 1);
