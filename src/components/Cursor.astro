@@ -282,10 +282,20 @@
             .getPropertyValue("--hover-py")
         )
           hoveredElement.style.setProperty("--hover-py", "0.25em");
+        if (
+          !window
+            .getComputedStyle(hoveredElement)
+            .getPropertyValue("--hover-radius")
+        )
+          hoveredElement.style.setProperty("--hover-radius", "6px");
 
         // Get padding from CSS property
         const paddingX = propProber.propertyToPx(hoveredElement, "--hover-px");
         const paddingY = propProber.propertyToPx(hoveredElement, "--hover-py");
+        const radius = propProber.propertyToPx(
+          hoveredElement,
+          "--hover-radius",
+        );
 
         // Top left corner
         const linkX = boundingBox.x + 12 - paddingX;
@@ -330,7 +340,7 @@
           cursorParams.y = targetY;
           cursorParams.width = boundingBox.width + paddingX * 2;
           cursorParams.height = boundingBox.height + paddingY * 2;
-          cursorParams.radius = 6;
+          cursorParams.radius = radius;
         } else {
           // Animate smoothly to link position
           cursorParams.x = lerp(
@@ -356,7 +366,7 @@
           );
           cursorParams.radius = lerp(
             cursorParams.radius,
-            6,
+            radius,
             pointerAttractionFactor * deltaTime * 1.3,
           );
         }

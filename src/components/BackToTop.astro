@@ -1,0 +1,90 @@
+---
+import { Icon } from "astro-icon/components";
+---
+
+<div id="back-to-top-scroll-sentinel" transition:persist></div>
+<div class="container" id="back-to-top" transition:persist>
+  <button data-interactable>
+    <Icon name="at-icons:arrow-up" />
+  </button>
+</div>
+
+<style lang="scss">
+  #back-to-top-scroll-sentinel {
+    position: absolute;
+    top: 1000px;
+  }
+
+  .container {
+    position: fixed;
+    z-index: 50;
+    right: calc(5rem + (100% - 100vw));
+    bottom: 5rem;
+    transition: transform 300ms cubic-bezier(0.4, 0, 0.2, 1);
+
+    transform: translateY(200px);
+  }
+
+  .container.visible {
+    transform: translateY(0px);
+  }
+
+  button {
+    border: none;
+    height: calc(24px + 2 * 0.75rem);
+
+    padding: 0.75rem;
+    background-color: var(--c-text);
+    border-radius: 9999px;
+    cursor: pointer;
+
+    font-size: 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    --hover-px: 0.2rem;
+    --hover-py: 0.2rem;
+    --hover-radius: 9999px;
+  }
+
+  button > [data-icon] {
+    width: 24px;
+    height: 24px;
+    color: var(--c-mantle);
+  }
+</style>
+
+<script>
+  const button = document.getElementById("back-to-top")!;
+  const sentinel = document.getElementById("back-to-top-scroll-sentinel")!;
+
+  function scroll() {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }
+
+  button.addEventListener("click", scroll);
+
+  const observer = new IntersectionObserver(
+    ([entry]) => {
+      console.log(entry);
+      if (
+        !entry?.isIntersecting &&
+        entry?.boundingClientRect.top &&
+        entry?.boundingClientRect.top < 0
+      ) {
+        button.classList.add("visible");
+      } else {
+        button.classList.remove("visible");
+      }
+    },
+    { threshold: 0 },
+  );
+
+  document.addEventListener("astro:before-swap", () =>
+    observer.unobserve(sentinel),
+  );
+  document.addEventListener("astro:after-swap", () =>
+    observer.observe(sentinel),
+  );
+</script>
