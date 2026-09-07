@@ -40,6 +40,7 @@ interface Props {}
     </div>
   </div>
 </header>
+<div id="header-scroll-sentinel" transition:persist></div>
 
 <style lang="scss">
   @use "../styles/mixins/fonts";
@@ -259,25 +260,15 @@ interface Props {}
 </style>
 
 <script>
-  const header = document.querySelector("header");
+  import { scrollObserver } from "../scripts/utils/scrollObserver";
 
-  let rafID: number | null = null;
-  let scrolled = false;
+  const header = document.querySelector("header")!;
 
-  function handleScroll() {
-    if (window.scrollY >= 40 != scrolled) {
-      if (rafID) cancelAnimationFrame(rafID);
-
-      rafID = requestAnimationFrame(() => {
-        scrolled = window.scrollY >= 40;
-        if (scrolled) header?.classList.add("scrolled");
-        else header?.classList.remove("scrolled");
-      });
-    }
-  }
-
-  window.addEventListener("scroll", handleScroll);
-  handleScroll();
+  scrollObserver.add({
+    offset: 40,
+    onScrollPast: () => header.classList.add("scrolled"),
+    onScrollBack: () => header.classList.remove("scrolled"),
+  });
 </script>
 
 <script>

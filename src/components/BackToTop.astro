@@ -2,7 +2,6 @@
 import { Icon } from "astro-icon/components";
 ---
 
-<div id="back-to-top-scroll-sentinel" transition:persist></div>
 <div class="container" id="back-to-top" transition:persist>
   <button data-interactable>
     <Icon name="at-icons:arrow-up" />
@@ -56,8 +55,9 @@ import { Icon } from "astro-icon/components";
 </style>
 
 <script>
+  import { scrollObserver } from "../scripts/utils/scrollObserver.ts";
+
   const button = document.getElementById("back-to-top")!;
-  const sentinel = document.getElementById("back-to-top-scroll-sentinel")!;
 
   function scroll() {
     window.scrollTo({ top: 0, behavior: "smooth" });
@@ -65,26 +65,9 @@ import { Icon } from "astro-icon/components";
 
   button.addEventListener("click", scroll);
 
-  const observer = new IntersectionObserver(
-    ([entry]) => {
-      console.log(entry);
-      if (
-        !entry?.isIntersecting &&
-        entry?.boundingClientRect.top &&
-        entry?.boundingClientRect.top < 0
-      ) {
-        button.classList.add("visible");
-      } else {
-        button.classList.remove("visible");
-      }
-    },
-    { threshold: 0 },
-  );
-
-  document.addEventListener("astro:before-swap", () =>
-    observer.unobserve(sentinel),
-  );
-  document.addEventListener("astro:after-swap", () =>
-    observer.observe(sentinel),
-  );
+  scrollObserver.add({
+    offset: 1000,
+    onScrollPast: () => button.classList.add("visible"),
+    onScrollBack: () => button.classList.remove("visible"),
+  });
 </script>
