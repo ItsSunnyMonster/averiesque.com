@@ -149,6 +149,14 @@ const maskId = Math.random();
     document
       .querySelector<HTMLButtonElement>("#theme-toggle")
       ?.setAttribute("aria-label", theme);
+
+    const e = new CustomEvent("averiesque:theme-change", {
+      detail: {
+        theme,
+      },
+    });
+
+    document.dispatchEvent(e);
   };
 
   const setPreference = () => {

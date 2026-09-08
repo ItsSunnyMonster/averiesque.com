@@ -71,8 +71,8 @@ class GlowLink {
 
   previousTimestamp = 0;
 
-  startColor: Color;
-  endColor: Color;
+  startColor: Color = Color.parseFromHex("#FF00FF");
+  endColor: Color = Color.parseFromHex("#FF00FF");
 
   resizeObserver: ResizeObserver;
   intersectionObserver: IntersectionObserver;
@@ -82,20 +82,24 @@ class GlowLink {
   constructor(linkElement: HTMLAnchorElement) {
     this.linkElement = linkElement;
 
-    // FIXME: This does not currently update when theme is changed.
-    const rawStartColor =
-      getComputedStyle(linkElement)
-        .getPropertyValue("--underline-color")
-        .trim() || "#FF00FF";
+    const updateColor = () => {
+      const rawStartColor =
+        getComputedStyle(linkElement)
+          .getPropertyValue("--underline-color")
+          .trim() || "#FF00FF";
 
-    this.startColor = Color.parseFromHex(rawStartColor);
+      this.startColor = Color.parseFromHex(rawStartColor);
 
-    const rawEndColor =
-      getComputedStyle(linkElement)
-        .getPropertyValue("--particle-fade-color")
-        .trim() || "#FF00FF";
+      const rawEndColor =
+        getComputedStyle(linkElement)
+          .getPropertyValue("--particle-fade-color")
+          .trim() || "#FF00FF";
 
-    this.endColor = Color.parseFromHex(rawEndColor);
+      this.endColor = Color.parseFromHex(rawEndColor);
+    };
+
+    updateColor();
+    document.addEventListener("averiesque:theme-change", updateColor);
 
     // Setup canvas to draw particles
     this.canvas = document.createElement("canvas");
