@@ -64,7 +64,7 @@
     distanceFromRect,
     inverseFalloff,
   } from "../scripts/utils";
-  import { PropProber } from "../scripts/utils/propertyProber";
+  import { propProber } from "../scripts/utils/propertyProber";
   import { type SpringSimParams, TwoDSpring } from "../scripts/utils/springSim";
   import { isPersisted } from "../scripts/utils";
 
@@ -84,8 +84,6 @@
     hovered: boolean;
     spring: TwoDSpring;
   }
-
-  const propProber = new PropProber();
 
   // Real position of mouse pointer
   let pointerX = 0;
