@@ -44,6 +44,7 @@ interface Props {}
 
 <style lang="scss">
   @use "../styles/mixins/fonts";
+  @use "../styles/mixins/utils" as u;
 
   a {
     @include fonts.code;
@@ -63,7 +64,7 @@ interface Props {}
     justify-content: center;
     align-items: center;
 
-    transition: all 300ms cubic-bezier(0.4, 0, 0.2, 1);
+    @include u.transitions((background-color, padding, border-color));
 
     border-bottom: 2px solid #ffffff00;
     background-color: var(--c-mantle);
@@ -213,7 +214,7 @@ interface Props {}
 
       opacity: 0;
       transform: scaleY(0);
-      transition: all 300ms cubic-bezier(0.4, 0, 0.2, 1);
+      @include u.transitions((opacity, transform));
       transform-origin: top;
 
       &::after {

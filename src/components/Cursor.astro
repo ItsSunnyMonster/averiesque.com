@@ -10,6 +10,8 @@
 </div>
 
 <style lang="scss">
+  @use "../styles/mixins/utils" as u;
+
   #cursor {
     display: none;
   }
@@ -50,7 +52,7 @@
       height: var(--height);
       rx: var(--radius);
       ry: var(--radius);
-      transition: fill 300ms ease-in-out;
+      @include u.transitions((fill));
     }
   }
 </style>

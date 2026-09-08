@@ -28,6 +28,8 @@
 </footer>
 
 <style lang="scss">
+  @use "../styles/mixins/utils" as u;
+
   footer {
     background-color: var(--c-crust);
     margin-top: auto;
@@ -39,9 +41,7 @@
     padding: 2rem;
     width: 100%;
 
-    transition:
-      background-color 300ms cubic-bezier(0.4, 0, 0.2, 1),
-      color 300ms cubic-bezier(0.4, 0, 0.2, 1);
+    @include u.transitions((background-color, color));
   }
 
   .container {
@@ -77,7 +77,7 @@
 
   .line-2 > a {
     color: var(--c-blue);
-    transition: color 300ms cubic-bezier(0.4, 0, 0.2, 1);
+    @include u.transitions((color));
     text-decoration: none;
     display: inline-block;
 

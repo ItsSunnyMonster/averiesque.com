@@ -9,6 +9,8 @@ import { Icon } from "astro-icon/components";
 </div>
 
 <style lang="scss">
+  @use "../styles/mixins/utils" as u;
+
   #back-to-top-scroll-sentinel {
     position: absolute;
     top: 1000px;
@@ -19,7 +21,8 @@ import { Icon } from "astro-icon/components";
     z-index: 50;
     right: calc(5rem + (100% - 100vw));
     bottom: 5rem;
-    transition: transform 300ms cubic-bezier(0.4, 0, 0.2, 1);
+
+    @include u.transitions((transform));
 
     transform: translateY(200px);
   }

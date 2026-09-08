@@ -1,0 +1,35 @@
+@use "sass:list";
+@use "sass:map";
+
+@mixin transitions(
+  $properties,
+  $duration: 300ms,
+  $easing: cubic-bezier(0.4, 0, 0.2, 1),
+  $overrides: ()
+) {
+  $list: ();
+
+  @each $prop in $properties {
+    $prop-duration: $duration;
+    $prop-easing: $easing;
+
+    @if map.has-key($overrides, $prop) {
+      $overrides: map.get($overrides, $prop);
+
+      @if map-has-key($override, duration) {
+        $prop-duration: map.get($override, duration);
+      }
+      @if map-has-key($override, easing) {
+        $prop-easing: map.get($override, easing);
+      }
+    }
+
+    $list: list.append(
+      $list,
+      #{$prop} #{$prop-duration} #{$prop-easing},
+      comma
+    );
+  }
+
+  transition: $list;
+}

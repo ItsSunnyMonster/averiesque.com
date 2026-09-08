@@ -31,6 +31,8 @@ const { size } = Astro.props;
 </div>
 
 <style lang="scss">
+  @use "../styles/mixins/utils" as u;
+
   div {
     position: relative;
     width: 60px;
@@ -44,7 +46,7 @@ const { size } = Astro.props;
 
   #logo_light,
   #logo_dark {
-    transition: opacity 200ms ease-in-out;
+    @include u.transitions((opacity));
   }
 
   :root[data-theme="dark"] {

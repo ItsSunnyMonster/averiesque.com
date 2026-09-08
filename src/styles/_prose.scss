@@ -1,6 +1,7 @@
 @use "../styles/themes";
 @use "../styles/mixins/fonts";
 @use "../styles/mixins/prose" as *;
+@use "../styles/mixins/utils";
 
 // Headers
 @include prose(h1, h2, h3, h4, h5, h6) {
@@ -179,11 +180,14 @@ html[data-theme="dark"] {
 
 body:not(.has-custom-cursor) {
   @include prose("a") {
-    transition: color 150ms cubic-bezier(0.4, 0, 0.2, 1);
+    @include utils.transitions((color), $duration: 150ms);
   }
 
   @include prose("a::after") {
-    transition: all 150ms cubic-bezier(0.4, 0, 0.2, 1);
+    @include utils.transitions(
+      (height, left, right, border-radius),
+      $duration: 150ms
+    );
   }
 
   .prose a:active,
