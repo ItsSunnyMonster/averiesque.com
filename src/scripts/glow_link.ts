@@ -101,12 +101,15 @@ class GlowLink {
     updateColor();
     document.addEventListener("averiesque:theme-change", updateColor);
 
+    // Read styles from after element
+    const bottom = window.getComputedStyle(linkElement, "::after").bottom;
+
     // Setup canvas to draw particles
     this.canvas = document.createElement("canvas");
     // Canvas styles
     Object.assign(this.canvas.style, {
       position: "absolute",
-      bottom: "-3px",
+      bottom,
       // Canvas width is 32px more than the link, this is to allow particles to bleed left and right
       left: `-${S.horizontalBleedover}px`,
       pointerEvents: "none",
