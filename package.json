@@ -15,7 +15,7 @@
     "@catppuccin/palette": "^1.8.0",
     "@iconify-json/at-icons": "^1.2.3",
     "@iconify-json/fa7-brands": "^1.2.4",
-    "astro": "^7.2.10",
+    "astro": "^7.3.2",
     "astro-icon": "^1.2.0",
     "sass": "^1.103.1",
     "typescript": "^7.0.2"
