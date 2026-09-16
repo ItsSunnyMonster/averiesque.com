@@ -1,0 +1,91 @@
+---
+
+---
+
+<progress id="loading" value="0" max="100" class="done"></progress>
+
+<style lang="scss">
+  @use "../../styles/mixins/_utils" as u;
+
+  progress {
+    appearance: none;
+    border: none;
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background-color: color-mix(in oklab, currentColor 50%, var(--c-crust) 50%);
+    color: var(--c-yellow);
+    height: 4px;
+    width: 100%;
+    transform: translateY(50%);
+  }
+
+  progress::-moz-progress-bar {
+    background: currentColor;
+  }
+
+  progress::-webkit-progress-value {
+    background: currentColor;
+  }
+
+  progress::-webkit-progress-bar {
+    background-color: color-mix(in oklab, currentColor 50%, var(--c-crust) 50%);
+  }
+
+  progress.done {
+    opacity: 0;
+    @include u.transitions((opacity));
+    color: var(--c-green);
+    transition-delay: 300ms;
+  }
+
+  progress.pulse {
+    animation: pulse 1s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+    animation-direction: alternate;
+  }
+
+  @keyframes pulse {
+    0% {
+      color: color-mix(in oklab, var(--c-yellow) 100%, var(--c-crust) 0%);
+    }
+
+    100% {
+      color: color-mix(in oklab, var(--c-yellow) 80%, var(--c-crust) 20%);
+    }
+  }
+</style>
+
+<script>
+  const loading = document.getElementById("loading")! as HTMLProgressElement;
+
+  let loadingBarTimeout: NodeJS.Timeout | undefined = undefined;
+
+  function showLoadingBar() {
+    loading.classList.remove("done");
+
+    clearInterval(loadingBarTimeout);
+    loading.value = 0;
+
+    let progress = 0;
+    loadingBarTimeout = setInterval(() => {
+      if (progress < 90) {
+        progress += Math.random() * ((100 - progress) / 10);
+        loading.value = progress;
+      } else {
+        loading.classList.add("pulse");
+        clearInterval(loadingBarTimeout);
+      }
+    }, 200);
+  }
+
+  function hideLoadingBar() {
+    clearInterval(loadingBarTimeout);
+    loading.value = 100;
+    loading.classList.add("done");
+    loading.classList.remove("pulse");
+  }
+
+  document.addEventListener("astro:before-preparation", showLoadingBar);
+  document.addEventListener("astro:page-load", hideLoadingBar);
+</script>

@@ -5,6 +5,7 @@ import { Icon } from "astro-icon/components";
 
 import Hamburger from "./nav/Hamburger.astro";
 import ThemeSwitch from "./nav/ThemeSwitch.astro";
+import LoadingBar from "./nav/LoadingBar.astro";
 
 interface Props {}
 ---
@@ -39,6 +40,7 @@ interface Props {}
       <Hamburger />
     </div>
   </div>
+  <LoadingBar />
 </header>
 <div id="header-scroll-sentinel" transition:persist></div>
 
